@@ -1,0 +1,13 @@
+FROM python:3.10-alpine
+
+COPY requirements.txt /app/
+
+WORKDIR /app
+
+RUN pip install -r requirements.txt
+
+COPY . /app
+
+env FLASK_ENV=development
+
+ENTRYPOINT ["flask", "run", "-h", "0.0.0.0"]

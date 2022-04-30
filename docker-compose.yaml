@@ -1,0 +1,20 @@
+---
+services:
+
+  frontend:
+    container_name: frontend
+    build: frontend
+    ports:
+      - 5000:5000
+    volumes:
+      - ./frontend:/app
+    environment:
+      backend_host: backend:5000
+
+  backend:
+    container_name: backend
+    build: backend
+    ports:
+      - 8888:5000
+    volumes:
+      - ./backend:/app
