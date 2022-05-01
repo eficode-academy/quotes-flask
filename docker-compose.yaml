@@ -1,9 +1,12 @@
 ---
+# this docker-compose is for developing the quotes application
 services:
 
   frontend:
     container_name: frontend
-    build: frontend
+    build:
+      context: frontend
+      dockerfile: Dockerfile-dev
     ports:
       - 5000:5000
     volumes:
@@ -13,7 +16,9 @@ services:
 
   backend:
     container_name: backend
-    build: backend
+    build:
+      context: backend
+      dockerfile: Dockerfile-dev
     ports:
       - 8888:5000
     volumes:
