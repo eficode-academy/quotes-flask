@@ -1,32 +1,94 @@
 <head>
+    <title>Programming Quotes</title>
+
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+
     <!-- Bootstrap CSS only -->
     <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.1.3/dist/css/bootstrap.min.css" rel="stylesheet" integrity="sha384-1BmE4kWBq78iYhFldvKuhfTAU6auU8tT94WrHftjDbrCEXSU1oBoqyl2QvZ6jIW3" crossorigin="anonymous">
+
+    <!-- get the static .js script file -->
+    <script src="{{ url_for('static', filename='script.js') }}"></script>
 </head>
 
-<h1>Quotes</h1>
+<html>
+
+    <div class="container-fluid">
+
+        <!-- header -->
+        <nav class="navbar bg-warning text-white">
+          <div class="container-fluid">
+                <h1>Programming Quotes</h1>
+          </div>
+        </nav>
+
+        <!-- <h1>Programming Quotes</h1> -->
+
+        <div class="container p-3">
+
+            <div class="alert alert-secondary" role="alert" id="quotes-container">
+                <p>Quotes go here ...</p>
+            </div>
+
+            <div class="container">
+                <!-- button to get all quotes -->
+                    <button type="button" class="btn btn-secondary btn-lg" onclick="getRandom()">Get random quote</button>
+                <button type="button" class="btn btn-secondary btn-lg" onclick="getAll()">Get all quotes</button>
+            </div>
+
+        </div>
+
+        <!-- {% if backend %} -->
+        <!-- <h3>Showing quotes from backend:</h3> -->
+        <!-- {% else %} -->
+        <!-- <h3>Backend is not connected - showing default list of quotes:</h3> -->
+        <!-- {% endif %} -->
+
+        <!-- {% for quote in quotes %} -->
+        <!-- <li>{{ quote }}</li> -->
+        <!-- {% endfor %} -->
+
+        </div>
+
+        <div class="container p-3">
+
+            <!-- TODO fix border -->
+            <span class="border border-primary">
+
+                {% if backend %}
+                <h2>Submit a new Quote:</h2>
+
+                <form onsubmit="return addCookie(event)">
+                  <label class="form-label">Quote:</label>
+                  <input id="quote"  class="form-control" type="text" name="quote"><br />
+                  <input class="btn btn-outline-secondary" type="submit" value="Submit!">
+                </form>
+                {% else %}
+
+                <h4>Connect backend to enable adding new quotes!</h4>
+
+                {% endif %}
+
+            </span>
+
+        </div>
 
 
-{% if backend %}
-<h3>Showing quotes from backend:</h3>
-{% else %}
-<h3>Backend is not connected - showing default list of quotes:</h3>
-{% endif %}
+        <div class="container p-3">
 
-{% for quote in quotes %}
-<li>{{ quote }}</li>
-{% endfor %}
+            <h3>Connection Status:</h3>
 
+            {% if backend %}
+            <p>Backend: connected<p>
+            {% else %}
+            <p>Backend: no connection<p>
+            {% endif %}
 
-<h3>Connection Status:</h3>
-
-{% if backend %}
-<p>Backend: connected<p>
-{% else %}
-<p>Backend: no connection<p>
-{% endif %}
-
-{% if database %}
-<p>Database: connected<p>
-{% else %}
-<p>Database: no connection<p>
-{% endif %}
+            {% if database %}
+            <p>Database: connected<p>
+            {% else %}
+            <p>Database: no connection<p>
+            {% endif %}
+        </div>
+    </div>
+</html>
