@@ -26,7 +26,6 @@ def add_quote():
     """add quote to list of quotes"""
     if request.method == "POST":
         request_json = request.get_json()
-        print(request_json, flush=True)
 
         if "quote" in request_json:
             QUOTES.append(request_json["quote"])

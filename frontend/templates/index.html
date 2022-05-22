@@ -1,3 +1,4 @@
+<html>
 <head>
     <title>Programming Quotes</title>
 
@@ -11,8 +12,7 @@
     <script src="{{ url_for('static', filename='script.js') }}"></script>
 </head>
 
-<html>
-
+<body style="background: #333; color: #ccc; font-family: comic-sans;">
     <div class="container-fluid">
 
         <!-- header -->
@@ -22,7 +22,11 @@
           </div>
         </nav>
 
-        <!-- <h1>Programming Quotes</h1> -->
+        {% if backend %}
+        <h3>Showing quotes from backend:</h3>
+        {% else %}
+        <h3>Backend is not connected - showing default list of quotes:</h3>
+        {% endif %}
 
         <div class="container p-3">
 
@@ -30,46 +34,32 @@
                 <p>Quotes go here ...</p>
             </div>
 
-            <div class="container">
-                <!-- button to get all quotes -->
+            <div class="row">
+                <div class="col-md-8 offset-md-2">
+                    <!-- button to get all quotes -->
                     <button type="button" class="btn btn-secondary btn-lg" onclick="getRandom()">Get random quote</button>
-                <button type="button" class="btn btn-secondary btn-lg" onclick="getAll()">Get all quotes</button>
+                    <button type="button" class="btn btn-secondary btn-lg" onclick="getAll()">Get all quotes</button>
+                </div>
             </div>
-
-        </div>
-
-        <!-- {% if backend %} -->
-        <!-- <h3>Showing quotes from backend:</h3> -->
-        <!-- {% else %} -->
-        <!-- <h3>Backend is not connected - showing default list of quotes:</h3> -->
-        <!-- {% endif %} -->
-
-        <!-- {% for quote in quotes %} -->
-        <!-- <li>{{ quote }}</li> -->
-        <!-- {% endfor %} -->
 
         </div>
 
         <div class="container p-3">
 
-            <!-- TODO fix border -->
-            <span class="border border-primary">
+            {% if backend %}
+            <h2>Submit a new Quote:</h2>
 
-                {% if backend %}
-                <h2>Submit a new Quote:</h2>
+            <form onsubmit="return addCookie(event)">
+              <label class="form-label">Quote:</label>
+              <input id="quote"  class="form-control" type="text" name="quote"><br />
+              <input class="btn btn-outline-secondary" type="submit" value="Submit!">
+            </form>
+            {% else %}
 
-                <form onsubmit="return addCookie(event)">
-                  <label class="form-label">Quote:</label>
-                  <input id="quote"  class="form-control" type="text" name="quote"><br />
-                  <input class="btn btn-outline-secondary" type="submit" value="Submit!">
-                </form>
-                {% else %}
+            <h4>Connect backend to enable adding new quotes!</h4>
 
-                <h4>Connect backend to enable adding new quotes!</h4>
+            {% endif %}
 
-                {% endif %}
-
-            </span>
 
         </div>
 
@@ -89,6 +79,8 @@
             {% else %}
             <p>Database: no connection<p>
             {% endif %}
+
         </div>
     </div>
+</body>
 </html>
