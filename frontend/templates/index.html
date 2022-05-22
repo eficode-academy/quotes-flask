@@ -26,19 +26,20 @@
         </div>
       </nav>
 
-      {% if backend %}
-      <h3>Showing quotes from backend:</h3>
-      {% else %}
-      <h3>Backend is not connected - showing default list of quotes:</h3>
-      {% endif %}
-
       <div class="container p-3">
+        <hr />
+        {% if backend %}
+        <h3>Showing quotes from backend:</h3>
+        {% else %}
+        <h3>Backend is not connected - showing default list of quotes:</h3>
+        {% endif %}
+
         <div class="alert alert-secondary" role="alert" id="quotes-container">
           <p>Quotes go here ...</p>
         </div>
 
         <div class="row">
-          <div class="col-md-8 offset-md-2">
+          <div class="col-md-8 offset-md-4">
             <!-- button to get all quotes -->
             <button
               type="button"
@@ -59,6 +60,7 @@
       </div>
 
       <div class="container p-3">
+        <hr />
         {% if backend %}
         <h2>Submit a new Quote:</h2>
 
@@ -84,20 +86,18 @@
       </div>
 
       <div class="container p-3">
-        <h3>Connection Status:</h3>
+        <hr />
+        <h4>Connection Status (updated on page load):</h4>
 
         {% if backend %}
-        <p>Backend: connected</p>
-        <p>{% else %}</p>
-
-        <p>Backend: no connection</p>
-        <p>{% endif %} {% if database %}</p>
-
-        <p>Database: connected</p>
-        <p>{% else %}</p>
-
-        <p>Database: no connection</p>
-        <p>{% endif %}</p>
+        <span class="badge bg-success">Backend: connected</span>
+        {% else %}
+        <span class="badge bg-secondary">Backend: no connection</span>
+        {% endif %} {% if database %}
+        <span class="badge bg-success">Database: connected</span>
+        Database: connected {% else %}
+        <span class="badge bg-secondary">Database: no connection</span>
+        {% endif %}
       </div>
     </div>
   </body>
