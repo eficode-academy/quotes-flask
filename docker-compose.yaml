@@ -1,7 +1,6 @@
 ---
 # this docker-compose is for developing the quotes application
 services:
-
   frontend:
     container_name: frontend
     build:
@@ -13,6 +12,7 @@ services:
       - ./frontend:/app
     environment:
       backend_host: backend:5000
+    restart: always
 
   backend:
     container_name: backend
@@ -23,3 +23,31 @@ services:
       - 8888:5000
     volumes:
       - ./backend:/app
+    environment:
+      db_host: db
+      db_user: superuser
+      db_password: complicated
+      db_name: quotes
+    restart: always
+
+  db:
+    container_name: postgres
+    image: postgres:14.3
+    ports:
+      - 5432:5432
+    environment:
+      POSTGRES_USER: superuser
+      POSTGRES_PASSWORD: complicated
+      POSTGRES_DB: quotes
+    volumes:
+      - postgres:/var/lib/postgresql/data
+
+  # handy GUI for checking that things changed in the db
+  adminer:
+    image: adminer
+    restart: always
+    ports:
+      - 8080:8080
+
+volumes:
+  postgres:

@@ -21,6 +21,28 @@ BACKEND_ENDPOINT = os.environ.get("backend_host", False)
 BACKEND_URL = f"http://{BACKEND_ENDPOINT}"
 
 
+def check_if_database_is_available() -> bool:
+    """Check if the database is reachable and should be used"""
+    # check if the env var has been set
+    if BACKEND_ENDPOINT:
+        # try querying the backend
+        try:
+            backend_health_endpoint = f"{BACKEND_URL}/check-db-connection"
+            response = requests.get(backend_health_endpoint)
+            if response.status_code == 200:
+                body = response.json()
+                if "db-connected" in body:
+                    if body["db-connected"] == "true":
+                        return True
+                    return False
+            else:
+                return False
+        except (requests.ConnectionError, KeyError):
+            return False
+    else:
+        return False
+
+
 def check_if_backend_is_available() -> bool:
     """Check if the backend is reachable and should be used"""
     # check if the env var has been set
@@ -61,8 +83,8 @@ def index():
     """Main endpoint, serves the frontend"""
     # check if the backend and database are available and communicate this to user
     backend_available = check_if_backend_is_available()
-    # TODO
-    database_available = False
+    # check if the backend is communicating with the database
+    database_available = check_if_database_is_available()
 
     if backend_available:
         _quotes = get_all_quotes_from_backend()

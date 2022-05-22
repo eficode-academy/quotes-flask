@@ -8,6 +8,6 @@ RUN pip install -r requirements.txt
 
 COPY . /app
 
-env FLASK_ENV=development
+ENV FLASK_ENV=development
 
 ENTRYPOINT ["flask", "run", "-h", "0.0.0.0"]

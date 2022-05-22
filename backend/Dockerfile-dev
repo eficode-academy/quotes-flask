@@ -4,10 +4,18 @@ COPY requirements.txt /app/
 
 WORKDIR /app
 
-RUN pip install -r requirements.txt
+# we need a bunch dependencies to build the psycopg2 package, but we don't them need to run it afterwards
+RUN \
+    apk add --no-cache --virtual .build gcc python3-dev musl-dev postgresql-dev && \
+    pip install --no-cache-dir -r requirements.txt && \
+    apk del --no-cache .build
+
+RUN apk add --no-cache postgresql-libs
 
 COPY . /app
 
-env FLASK_ENV=development
+ENV FLASK_ENV=development
+
+EXPOSE 5000
 
 ENTRYPOINT ["flask", "run", "-h", "0.0.0.0"]
