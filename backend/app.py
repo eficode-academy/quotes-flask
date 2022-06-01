@@ -14,6 +14,7 @@ from quotes import default_quotes
 # create the flask app
 app = Flask(__name__)
 
+
 # add flask-healthz config to flask config
 app.config["HEALTHZ"] = {"live": "healthz.liveness", "ready": "healthz.readiness"}
 # create the healthz endpoints

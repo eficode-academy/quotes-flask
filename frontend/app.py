@@ -13,6 +13,13 @@ from quotes import default_quotes
 # create the flask app
 app = Flask(__name__)
 
+# test logging
+app.logger.info("info")
+app.logger.warning("warning")
+app.logger.debug("debug")
+app.logger.error("error")
+app.logger.critical("critical")
+
 # add flask-healthz config to flask config
 app.config["HEALTHZ"] = {"live": "healthz.liveness", "ready": "healthz.readiness"}
 # create the healthz endpoints

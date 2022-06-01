@@ -10,4 +10,6 @@ COPY . /app
 
 ENV FLASK_ENV=development
 
+EXPOSE 5000
+
 ENTRYPOINT ["flask", "run", "-h", "0.0.0.0"]
