@@ -1,3 +1,6 @@
+"""
+Default quotes shown if the backend is not connected.
+"""
 default_quotes = [
     '"Talk is cheap. Show me the code." ― Linus Torvalds',
     '"Any fool can write code that a computer can understand. Good programmers write code that humans can understand." – Martin Fowler',

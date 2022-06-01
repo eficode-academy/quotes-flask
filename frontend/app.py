@@ -1,3 +1,7 @@
+"""
+Frontend flask app, serves the graphical html version
+and provides endpoints for getting/pushing quotes.
+"""
 import os
 import random
 import requests
@@ -21,10 +25,22 @@ BACKEND_ENDPOINT = os.environ.get("backend_host", False)
 BACKEND_URL = f"http://{BACKEND_ENDPOINT}"
 
 
+def check_backend_endpoint_env_var() -> bool:
+    """Checks if the user has set the backend host environment variable"""
+    if BACKEND_ENDPOINT:
+        print(
+            f"Found 'backend_host' environment variable, will attempt to connect to the backend on: {BACKEND_URL}",
+            flush=True,
+        )
+        return True
+    print("WARNING: 'backend_host' environment variable not set, set this to connect to the backend.", flush=True)
+    return False
+
+
 def check_if_database_is_available() -> bool:
     """Check if the database is reachable and should be used"""
     # check if the env var has been set
-    if BACKEND_ENDPOINT:
+    if check_backend_endpoint_env_var():
         # try querying the backend
         try:
             backend_health_endpoint = f"{BACKEND_URL}/check-db-connection"
@@ -37,6 +53,7 @@ def check_if_database_is_available() -> bool:
                     return False
             else:
                 return False
+            return False
         except (requests.ConnectionError, KeyError):
             return False
     else:

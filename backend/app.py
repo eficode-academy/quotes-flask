@@ -1,9 +1,13 @@
-import json
+"""
+Backend flask app, provides an API for retrieving and
+storing quotes, can connect to an external database
+to persist quotes.
+"""
 import random
 import os
-import db
 from flask import Flask, jsonify, request
 from flask_healthz import healthz
+import db
 from quotes import default_quotes
 
 
@@ -37,19 +41,19 @@ def check_db_creds_are_set() -> bool:
     """Checks if the user has set all env vars needed for connecting to the db, and warns them otherwise"""
     all_set = True
     if not DATABASE_HOST:
-        print("WARNING: 'db_host' environment variable not set, set this to connect to the database.")
+        print("WARNING: 'db_host' environment variable not set, set this to connect to the database.", flush=True)
         all_set = False
 
     if not DATABASE_USER:
-        print("WARNING: 'db_user' environment variable not set, set this to connect to the database.")
+        print("WARNING: 'db_user' environment variable not set, set this to connect to the database.", flush=True)
         all_set = False
 
     if not DATABASE_PASSWORD:
-        print("WARNING: 'db_password' environment variable not set, set this to connect to the database.")
+        print("WARNING: 'db_password' environment variable not set, set this to connect to the database.", flush=True)
         all_set = False
 
     if not DATABASE_NAME:
-        print("WARNING: 'db_name' environment variable not set, set this to connect to the database.")
+        print("WARNING: 'db_name' environment variable not set, set this to connect to the database.", flush=True)
         all_set = False
 
     return all_set
@@ -88,9 +92,9 @@ def add_quote():
             if check_if_db_is_available():
                 inserted = db.insert_quote(quote, DB_CONN)
                 if inserted:
-                    print(f"Successfully inserted '{quote}' into db.")
+                    print(f"Successfully inserted '{quote}' into db.", flush=True)
                 else:
-                    print(f"ERROR: could insert '{quote}' into db.")
+                    print(f"ERROR: could insert '{quote}' into db.", flush=True)
         else:
             # TODO propper logging
             print("Error: could not find 'quote' in request", flush=True)
