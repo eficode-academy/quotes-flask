@@ -1,13 +1,22 @@
 import psycopg2
+from flask import Flask
 from quotes import db_quotes
+
+app = None
 
 # name of the table to create
 TABLE_NAME = "quotes"
 
 
+def import_app(_app: Flask) -> None:
+    """import app object from main file"""
+    global app
+    app = _app
+
+
 def check_if_table_exists(db_conn: dict) -> bool:
     """check if the table already exists"""
-    print("Checking if the table exists in the database ...", flush=True)
+    app.logger.info("Checking if the table exists in the database ...")
     check_table_exists_sql = f"""
     SELECT EXISTS (
         SELECT FROM pg_tables
@@ -23,16 +32,16 @@ def check_if_table_exists(db_conn: dict) -> bool:
             host=db_conn["host"], user=db_conn["user"], password=db_conn["password"], database=db_conn["name"]
         ) as connection:
             with connection.cursor() as cursor:
-                print("Checking if table exists ...", flush=True)
+                app.logger.info("Checking if table exists ...")
                 cursor.execute(check_table_exists_sql)
                 res = cursor.fetchone()
             connection.commit()
         exists = res[0]
     except psycopg2.DatabaseError as err:
-        print(f"ERROR: check if table exists: {err}", flush=True)
+        app.logger.error(f"check if table exists: {err}")
         return False
 
-    print(f"Table exists: {exists}", flush=True)
+    app.logger.info(f"Table exists: {exists}")
 
     # if it exists return ture, otherwise create the table
     # and return true if table creation succeeds
@@ -52,7 +61,7 @@ def create_table(db_conn: dict) -> bool:
     );
     """
     try:
-        print("Creating table ...", flush=True)
+        app.logger.info("Creating table ...")
         with psycopg2.connect(
             host=db_conn["host"], user=db_conn["user"], password=db_conn["password"], database=db_conn["name"]
         ) as connection:
@@ -62,23 +71,23 @@ def create_table(db_conn: dict) -> bool:
             insert_default_quotes(db_conn)
             return True
     except psycopg2.DatabaseError as err:
-        print(f"ERROR: when creating table: {err}", flush=True)
+        app.logger.error(f"when creating table: {err}")
         return False
 
 
 def check_connection(db_conn: dict) -> bool:
     """check if the db is connected"""
-    print("Attempting to connect to the database ...", flush=True)
+    app.logger.info("Attempting to connect to the database ...")
     try:
         # try to creat a connection to the database
         with psycopg2.connect(
             host=db_conn["host"], user=db_conn["user"], password=db_conn["password"], database=db_conn["name"]
         ):
             # do nothing, we only want to check if we can connect
-            print("Successfully connected to the database.", flush=True)
+            app.logger.info("Successfully connected to the database.")
         return True
     except psycopg2.OperationalError as err:
-        print(f"Could not connect to to database, reason: {err}", flush=True)
+        app.logger.error(f"Could not connect to to database, reason: {err}")
         return False
 
 
@@ -94,10 +103,10 @@ def insert_quote(quote: str, db_conn: dict) -> bool:
                     cursor.execute(insert_sql, (quote,))
                 connection.commit()
                 return True
-        print("ERROR: table does not exist.")
+        app.logger.error("table does not exist.")
         return False
     except psycopg2.OperationalError as err:
-        print(f"Could not connect to to database, reason: {err}", flush=True)
+        app.logger.error(f"Could not connect to to database, reason: {err}")
         return False
 
 
@@ -118,15 +127,15 @@ def get_quotes(db_conn: dict) -> list:
                             quotes.append(row[0])
                         return quotes
                     return []
-        print("ERROR: table does not exist.", flush=True)
+        app.logger.error("table does not exist.")
         return []
     except psycopg2.DatabaseError as err:
-        print(f"ERROR: when getting quotes from the db: {err}")
+        app.logger.error(f"when getting quotes from the db: {err}")
         return None
 
 
 def insert_default_quotes(db_conn: dict):
     """insert the default quotes into the database"""
-    print("Inserting default quotes into database ...", flush=True)
+    app.logger.info("Inserting default quotes into database ...")
     for quote in db_quotes:
         insert_quote(quote, db_conn)

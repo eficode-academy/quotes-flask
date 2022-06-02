@@ -5,20 +5,16 @@ and provides endpoints for getting/pushing quotes.
 import os
 import random
 import requests
+import logging
 from flask import Flask, render_template, jsonify, request
 from flask_healthz import healthz
 from quotes import default_quotes
 
+# configure logging
+logging.basicConfig(level=logging.DEBUG, format=f"%(asctime)s %(levelname)s: %(message)s")
 
 # create the flask app
 app = Flask(__name__)
-
-# test logging
-app.logger.info("info")
-app.logger.warning("warning")
-app.logger.debug("debug")
-app.logger.error("error")
-app.logger.critical("critical")
 
 # add flask-healthz config to flask config
 app.config["HEALTHZ"] = {"live": "healthz.liveness", "ready": "healthz.readiness"}
@@ -35,12 +31,11 @@ BACKEND_URL = f"http://{BACKEND_ENDPOINT}"
 def check_backend_endpoint_env_var() -> bool:
     """Checks if the user has set the backend host environment variable"""
     if BACKEND_ENDPOINT:
-        print(
-            f"Found 'backend_host' environment variable, will attempt to connect to the backend on: {BACKEND_URL}",
-            flush=True,
+        app.logger.info(
+            f"Found 'backend_host' environment variable, will attempt to connect to the backend on: {BACKEND_URL}"
         )
         return True
-    print("WARNING: 'backend_host' environment variable not set, set this to connect to the backend.", flush=True)
+    app.logger.warning("'backend_host' environment variable not set, set this to connect to the backend.")
     return False
 
 
@@ -87,8 +82,7 @@ def get_random_quote_from_backend() -> str:
     response = requests.get(f"{BACKEND_URL}/quote")
     if response.status_code == 200:
         return response.text
-    # TODO propper logging
-    print("Error: did not get a response 200 from backend", flush=True)
+    app.logger.error("did not get a response 200 from backend")
     return ""
 
 
@@ -97,8 +91,7 @@ def get_all_quotes_from_backend() -> list[str]:
     response = requests.get(f"{BACKEND_URL}/quotes")
     if response.status_code == 200:
         return response.json()
-    # TODO propper logging
-    print("Error: did not get a response 200 from backend")
+    app.logger.error("did not get a response 200 from backend")
     return []
 
 
@@ -139,16 +132,20 @@ def quotes():
 @app.route("/add-quote", methods=["POST"])
 def add_quote():
     """receive quote and pass it on to the backend"""
+    app.logger.info("attempting to add new quote to backend ...")
     if request.method == "POST":
         request_json = request.get_json()
-        print(request_json, flush=True)
+        app.logger.info(f"recieved JSON: {request_json}")
 
         if "quote" in request_json:
             url = f"{BACKEND_URL}/add-quote"
-            requests.post(url, json=request_json)
+            res = requests.post(url, json=request_json)
+            if res.status_code == 200:
+                app.logger.info("new quote successfully posted to backend.")
+            else:
+                app.logger.error("could not successfully post new quote to backend.")
         else:
-            # TODO propper logging
-            print("Error: could not find 'quote' in request", flush=True)
+            app.logger.error("could not find 'quote' in request")
             return "No 'quote' key in JSON", 500
 
         return "Quote received", 200

@@ -5,11 +5,14 @@ to persist quotes.
 """
 import random
 import os
+import logging
 from flask import Flask, jsonify, request
 from flask_healthz import healthz
 import db
 from quotes import default_quotes
 
+# configure logging
+logging.basicConfig(level=logging.DEBUG, format=f"%(asctime)s %(levelname)s: %(message)s")
 
 # create the flask app
 app = Flask(__name__)
@@ -19,6 +22,9 @@ app = Flask(__name__)
 app.config["HEALTHZ"] = {"live": "healthz.liveness", "ready": "healthz.readiness"}
 # create the healthz endpoints
 app.register_blueprint(healthz, url_prefix="/healthz")
+
+# pass app object to db class
+db.import_app(app)
 
 
 # host for the backend, if not set default to False
@@ -42,19 +48,19 @@ def check_db_creds_are_set() -> bool:
     """Checks if the user has set all env vars needed for connecting to the db, and warns them otherwise"""
     all_set = True
     if not DATABASE_HOST:
-        print("WARNING: 'db_host' environment variable not set, set this to connect to the database.", flush=True)
+        app.logger.warning("'db_host' environment variable not set, set this to connect to the database.")
         all_set = False
 
     if not DATABASE_USER:
-        print("WARNING: 'db_user' environment variable not set, set this to connect to the database.", flush=True)
+        app.logger.warning("'db_user' environment variable not set, set this to connect to the database.")
         all_set = False
 
     if not DATABASE_PASSWORD:
-        print("WARNING: 'db_password' environment variable not set, set this to connect to the database.", flush=True)
+        app.logger.warning("'db_password' environment variable not set, set this to connect to the database.")
         all_set = False
 
     if not DATABASE_NAME:
-        print("WARNING: 'db_name' environment variable not set, set this to connect to the database.", flush=True)
+        app.logger.warning("'db_name' environment variable not set, set this to connect to the database.")
         all_set = False
 
     return all_set
@@ -62,12 +68,12 @@ def check_db_creds_are_set() -> bool:
 
 def check_if_db_is_available() -> bool:
     """Check if the db is reachable and should be used"""
-    print("Checking connection to the database ...", flush=True)
+    app.logger.info("Checking connection to the database ...")
 
     if check_db_creds_are_set():
         return db.check_connection(DB_CONN)
     else:
-        print("WARNING: database connection environment variables not set, cannot test connection.", flush=True)
+        app.logger.warning("database connection environment variables not set, cannot test connection.")
         return False
 
 
@@ -93,12 +99,11 @@ def add_quote():
             if check_if_db_is_available():
                 inserted = db.insert_quote(quote, DB_CONN)
                 if inserted:
-                    print(f"Successfully inserted '{quote}' into db.", flush=True)
+                    app.logger.info(f"Successfully inserted '{quote}' into db.")
                 else:
-                    print(f"ERROR: could insert '{quote}' into db.", flush=True)
+                    app.logger.error(f"could insert '{quote}' into db.")
         else:
-            # TODO propper logging
-            print("Error: could not find 'quote' in request", flush=True)
+            app.logger.error("could not find 'quote' in request")
             return "No 'quote' key in JSON", 500
 
         return "Quote received", 200
@@ -119,4 +124,11 @@ def quotes():
 @app.route("/quote")
 def quote():
     """return single random quote"""
+    if check_if_db_is_available():
+        quotes = db.get_quotes(DB_CONN)
+        if quotes:
+            return random.choice(quotes)
+        app.logger.error("Could not get quotes from the database.")
+        return ""
+    # if db not available, use in-memory quotes
     return random.choice(QUOTES)
