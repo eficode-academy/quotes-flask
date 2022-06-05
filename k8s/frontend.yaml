@@ -1,0 +1,29 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  creationTimestamp: null
+  labels:
+    app: frontend
+  name: frontend
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      app: frontend
+  strategy: {}
+  template:
+    metadata:
+      creationTimestamp: null
+      labels:
+        app: frontend
+    spec:
+      containers:
+        - image: ghcr.io/zanderhavgaard/flask-quotes-frontend:release
+          name: quotes-flask-frontend
+          ports:
+            - containerPort: 5000
+          resources: {}
+          env:
+            - name: backend_host
+              value: backend:5000
+status: {}
