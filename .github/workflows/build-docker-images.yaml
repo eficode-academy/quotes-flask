@@ -9,6 +9,7 @@ jobs:
   build:
     runs-on: ubuntu-latest
     permissions:
+      contents: read
       packages: write
 
     steps:
@@ -18,5 +19,5 @@ jobs:
       - name: Login to ghcr.io
         run: echo "${{ secrets.GITHUB_TOKEN }}" | docker login ghcr.io -u $ --password-stdin
 
-      - name: Build and push container images
+      - name: Build and push container images 
         run: bash ci/build_push_docker.sh
