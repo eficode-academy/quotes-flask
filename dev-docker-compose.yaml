@@ -11,7 +11,8 @@ services:
     volumes:
       - ./frontend:/app
     environment:
-      backend_host: backend:5000
+      backend_host: backend
+      backend_port: 5000
     restart: always
 
   backend:
@@ -24,13 +25,14 @@ services:
     volumes:
       - ./backend:/app
     environment:
-      db_host: db
+      db_host: postgres
+      db_port: 5432
       db_user: superuser
       db_password: complicated
       db_name: quotes
     restart: always
 
-  db:
+  postgres:
     container_name: postgres
     image: postgres:14.3
     ports:
@@ -41,6 +43,7 @@ services:
       POSTGRES_DB: quotes
     volumes:
       - postgres:/var/lib/postgresql/data
+    restart: always
 
   # handy GUI for checking that things changed in the db
   adminer:

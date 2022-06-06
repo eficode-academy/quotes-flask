@@ -29,12 +29,14 @@ db.import_app(app)
 
 # host for the backend, if not set default to False
 DATABASE_HOST = os.environ.get("db_host", False)
+DATABASE_PORT = os.environ.get("db_port", False)
 DATABASE_USER = os.environ.get("db_user", False)
 DATABASE_PASSWORD = os.environ.get("db_password", False)
 DATABASE_NAME = os.environ.get("db_name", False)
 
 DB_CONN = {
     "host": DATABASE_HOST,
+    "port": DATABASE_PORT,
     "user": DATABASE_USER,
     "password": DATABASE_PASSWORD,
     "name": DATABASE_NAME,

@@ -22,10 +22,13 @@ app.config["HEALTHZ"] = {"live": "healthz.liveness", "ready": "healthz.readiness
 app.register_blueprint(healthz, url_prefix="/healthz")
 
 
+# Read environment variables
+BACKEND_HOST = os.environ.get("backend_host", False)
+BACKEND_PORT = os.environ.get("backend_port", False)
 # host for the backend, if not set default to False
-BACKEND_ENDPOINT = os.environ.get("backend_host", False)
+BACKEND_ENDPOINT = bool(BACKEND_HOST and BACKEND_PORT)
 # build the url for the backend
-BACKEND_URL = f"http://{BACKEND_ENDPOINT}"
+BACKEND_URL = f"http://{BACKEND_HOST}:{BACKEND_PORT}"
 
 
 def check_backend_endpoint_env_var() -> bool:

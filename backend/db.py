@@ -29,7 +29,11 @@ def check_if_table_exists(db_conn: dict) -> bool:
 
     try:
         with psycopg2.connect(
-            host=db_conn["host"], user=db_conn["user"], password=db_conn["password"], database=db_conn["name"]
+            host=db_conn["host"],
+            port=db_conn["port"],
+            user=db_conn["user"],
+            password=db_conn["password"],
+            database=db_conn["name"],
         ) as connection:
             with connection.cursor() as cursor:
                 app.logger.info("Checking if table exists ...")
@@ -63,7 +67,11 @@ def create_table(db_conn: dict) -> bool:
     try:
         app.logger.info("Creating table ...")
         with psycopg2.connect(
-            host=db_conn["host"], user=db_conn["user"], password=db_conn["password"], database=db_conn["name"]
+            host=db_conn["host"],
+            port=db_conn["port"],
+            user=db_conn["user"],
+            password=db_conn["password"],
+            database=db_conn["name"],
         ) as connection:
             with connection.cursor() as cursor:
                 cursor.execute(create_table_sql)
@@ -81,7 +89,11 @@ def check_connection(db_conn: dict) -> bool:
     try:
         # try to creat a connection to the database
         with psycopg2.connect(
-            host=db_conn["host"], user=db_conn["user"], password=db_conn["password"], database=db_conn["name"]
+            host=db_conn["host"],
+            port=db_conn["port"],
+            user=db_conn["user"],
+            password=db_conn["password"],
+            database=db_conn["name"],
         ):
             # do nothing, we only want to check if we can connect
             app.logger.info("Successfully connected to the database.")
@@ -97,7 +109,11 @@ def insert_quote(quote: str, db_conn: dict) -> bool:
     try:
         if check_if_table_exists(db_conn):
             with psycopg2.connect(
-                host=db_conn["host"], user=db_conn["user"], password=db_conn["password"], database=db_conn["name"]
+                host=db_conn["host"],
+                port=db_conn["port"],
+                user=db_conn["user"],
+                password=db_conn["password"],
+                database=db_conn["name"],
             ) as connection:
                 with connection.cursor() as cursor:
                     cursor.execute(insert_sql, (quote,))
@@ -116,7 +132,11 @@ def get_quotes(db_conn: dict) -> list:
     try:
         if check_if_table_exists(db_conn):
             with psycopg2.connect(
-                host=db_conn["host"], user=db_conn["user"], password=db_conn["password"], database=db_conn["name"]
+                host=db_conn["host"],
+                port=db_conn["port"],
+                user=db_conn["user"],
+                password=db_conn["password"],
+                database=db_conn["name"],
             ) as connection:
                 with connection.cursor() as cursor:
                     cursor.execute(select_sql)
