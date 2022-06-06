@@ -23,7 +23,23 @@ spec:
           ports:
             - containerPort: 5000
           resources: {}
+          ### using hardcoded env vars
+          # env:
+          # - name: backend_host
+          # value: backend
+          # - name: backend_port
+          # value: "5000"
+          ### using configmap reference
           env:
             - name: backend_host
-              value: backend:5000
+              valueFrom:
+                configMapKeyRef:
+                  name: backend-config
+                  key: backend_host
+            - name: backend_port
+              valueFrom:
+                configMapKeyRef:
+                  name: backend-config
+                  key: backend_port
+
 status: {}

@@ -1,0 +1,70 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  creationTimestamp: null
+  labels:
+    app: backend
+  name: backend
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      app: backend
+  strategy: {}
+  template:
+    metadata:
+      creationTimestamp: null
+      labels:
+        app: backend
+    spec:
+      containers:
+        - image: ghcr.io/zanderhavgaard/flask-quotes-backend:release
+          name: flask-quotes-backend
+          ports:
+            - containerPort: 5000
+          resources: {}
+          ### using hardcoded env vars
+          # env:
+          # - name: db_host
+          # value: postgres
+          # - name: db_port
+          # value: "5432"
+          # - name: db_user
+          # value: superuser
+          # - name: db_password
+          # value: complicated
+          # - name: db_name
+          # value: quotes
+          ### using configMapKeyRef
+          # env:
+          # - name: db_host
+          # valueFrom:
+          # configMapKeyRef:
+          # name: postgres-config
+          # key: db_host
+          # - name: db_port
+          # valueFrom:
+          # configMapKeyRef:
+          # name: postgres-config
+          # key: db_port
+          # - name: db_user
+          # valueFrom:
+          # configMapKeyRef:
+          # name: postgres-config
+          # key: db_user
+          # - name: db_password
+          # valueFrom:
+          # configMapKeyRef:
+          # name: postgres-config
+          # key: db_password
+          # - name: db_name
+          # valueFrom:
+          # configMapKeyRef:
+          # name: postgres-config
+          # key: db_name
+          ### using envfrom to load all env vars in configmap
+          envFrom:
+            - configMapRef:
+                name: postgres-config
+
+status: {}

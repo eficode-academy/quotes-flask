@@ -23,11 +23,29 @@ spec:
           ports:
             - containerPort: 5432
           resources: {}
+          ### Using hardcoded env vars
+          # env:
+          # - name: POSTGRES_USER
+          # value: superuser
+          # - name: POSTGRES_PASSWORD
+          # value: complicated
+          # - name: POSTGRES_DB
+          # value: quotes
+          ### using configMapKeyRef
           env:
             - name: POSTGRES_USER
-              value: superuser
+              valueFrom:
+                configMapKeyRef:
+                  name: postgres-config
+                  key: db_user
             - name: POSTGRES_PASSWORD
-              value: complicated
+              valueFrom:
+                configMapKeyRef:
+                  name: postgres-config
+                  key: db_password
             - name: POSTGRES_DB
-              value: quotes
+              valueFrom:
+                configMapKeyRef:
+                  name: postgres-config
+                  key: db_name
 status: {}
