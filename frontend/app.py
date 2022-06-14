@@ -4,6 +4,7 @@ and provides endpoints for getting/pushing quotes.
 """
 import os
 import random
+import socket
 import requests
 import logging
 from flask import Flask, render_template, jsonify, request
@@ -111,8 +112,9 @@ def index():
     else:
         _quotes = default_quotes
 
+    hostname = get_hostnames()
     # render the html template with arguments
-    return render_template("index.html", backend=backend_available, database=database_available, quotes=_quotes)
+    return render_template("index.html", backend=backend_available, database=database_available, quotes=_quotes, frontend_hostname= hostname["frontend"],backend_hostname=hostname["backend"])
 
 
 @app.route("/random-quote")
@@ -153,3 +155,20 @@ def add_quote():
 
         return "Quote received", 200
     return "Could not parse quote", 500
+def get_hostnames():
+    hostnames = {"frontend" : socket.gethostname()}
+    if check_if_backend_is_available():
+        response = requests.get(f"{BACKEND_URL}/hostname")
+        if response.status_code == 200:
+            resp_json = response.json()
+            app.logger.debug(resp_json)
+            if "backend" in resp_json:
+                hostnames["backend"] = resp_json['backend']
+                return hostnames
+    app.logger.error("did not get a response 200 from backend")
+    return hostnames
+
+@app.route("/hostname")
+def hostname():
+    """return the hostname of the given container"""
+    return jsonify(get_hostnames())

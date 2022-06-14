@@ -5,6 +5,7 @@ to persist quotes.
 """
 import random
 import os
+import socket
 import logging
 from flask import Flask, jsonify, request
 from flask_healthz import healthz
@@ -134,3 +135,8 @@ def quote():
         return ""
     # if db not available, use in-memory quotes
     return random.choice(QUOTES)
+
+@app.route("/hostname")
+def hostname():
+    """return the hostname of the given container"""
+    return jsonify({"backend": socket.gethostname()})

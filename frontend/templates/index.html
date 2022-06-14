@@ -101,6 +101,14 @@
         <span class="badge bg-secondary">Database: no connection</span>
         {% endif %}
       </div>
+      <div class="container p-3">
+        <hr />
+        <h4>Pod hostnames:</h4>
+        <span class="badge bg-success">Frontend: {{ frontend_hostname }}</span>
+         {% if backend %}
+        <span class="badge bg-success">Backend:  {{ backend_hostname }}</span>
+        {% endif %}
+      </div>
     </div>
   </body>
 </html>
