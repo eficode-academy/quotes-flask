@@ -2,19 +2,21 @@
 # this docker-compose is for running a production-like instance of the quotes app
 services:
   frontend:
-    image: ghcr.io/zanderhavgaard/flask-quotes-frontend:release
+    image: ghcr.io/eficode-academy/flask-quotes-frontend:release
     container_name: frontend
     ports:
       - 5000:5000
     environment:
-      backend_host: backend:5000
+      backend_host: backend
+      backend_port: 5000
     restart: always
 
   backend:
-    image: ghcr.io/zanderhavgaard/flask-quotes-backend:release
+    image: ghcr.io/eficode-academy/flask-quotes-backend:release
     container_name: backend
     environment:
-      db_host: db
+      db_host: postgres
+      db_port: 5432
       db_user: superuser
       db_password: complicated
       db_name: quotes

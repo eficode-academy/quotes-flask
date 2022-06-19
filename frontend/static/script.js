@@ -5,6 +5,9 @@ function getRandom() {
 function getAll() {
   get_json("/quotes");
 }
+function getHostnames(){
+  
+}
 
 function get(endpoint) {
   var xhttp = new XMLHttpRequest();
