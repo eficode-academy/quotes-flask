@@ -1,0 +1,56 @@
+name: quotes-flask
+
+# The build section defines how to build the images of your development environment
+# More info: https://www.okteto.com/docs/reference/manifest/#build
+# build:
+#   my-service:
+#     context: .
+
+# The deploy section defines how to deploy your development environment
+# More info: https://www.okteto.com/docs/reference/manifest/#deploy
+deploy:
+  compose:
+    file: docker-compose.yaml
+    services:
+      - postgres
+      - frontend
+      - backend
+
+# The dependencies section defines other git repositories to be deployed as part of your development environment
+# More info: https://www.okteto.com/docs/reference/manifest/#dependencies
+# dependencies:
+#   - https://github.com/okteto/sample
+
+# The dev section defines how to activate a development container
+# More info: https://www.okteto.com/docs/reference/manifest/#dev
+dev:
+  frontend:
+    command: flask run -h 0.0.0.0 --reload
+    workdir: /app
+    sync:
+      - frontend:/app
+    forward:
+      - 5000:5000
+    reverse:
+      - 9000:9000
+    environment:
+      backend_host: backend
+      backend_port: 5000
+      FLASK_ENV: development
+
+  backend:
+    command: flask run -h 0.0.0.0 --reload
+    workdir: /app
+    sync:
+      - backend:/app
+    forward:
+      - 8080:5000
+    reverse:
+      - 9090:9000
+    environment:
+      db_host: postgres
+      db_port: 5432
+      db_user: superuser
+      db_password: complicated
+      db_name: quotes
+      FLASK_ENV: development

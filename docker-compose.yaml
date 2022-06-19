@@ -22,7 +22,7 @@ services:
       db_name: quotes
     restart: always
 
-  db:
+  postgres:
     container_name: postgres
     image: postgres:14.3
     environment:
