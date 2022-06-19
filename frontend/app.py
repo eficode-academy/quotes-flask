@@ -112,9 +112,16 @@ def index():
     else:
         _quotes = default_quotes
 
-    hostname = get_hostnames()
+    frontend_hostname, backend_hostname = get_hostnames()
     # render the html template with arguments
-    return render_template("index.html", backend=backend_available, database=database_available, quotes=_quotes, frontend_hostname= hostname["frontend"],backend_hostname=hostname["backend"])
+    return render_template(
+        "index.html",
+        backend=backend_available,
+        database=database_available,
+        quotes=_quotes,
+        frontend_hostname=frontend_hostname,
+        backend_hostname=backend_hostname,
+    )
 
 
 @app.route("/random-quote")
@@ -144,31 +151,49 @@ def add_quote():
 
         if "quote" in request_json:
             url = f"{BACKEND_URL}/add-quote"
-            res = requests.post(url, json=request_json)
-            if res.status_code == 200:
-                app.logger.info("new quote successfully posted to backend.")
-            else:
+            try:
+                res = requests.post(url, json=request_json)
+                if res.status_code == 200:
+                    app.logger.info("new quote successfully posted to backend.")
+                    return "Quote received", 200
                 app.logger.error("could not successfully post new quote to backend.")
+                return "error inserting quote", 500
+            except (requests.ConnectionError, KeyError) as err:
+                app.logger.error("encountered error when trying to pass quote to backend:")
+                app.logger.error(err)
+                return "error inserting quote", 500
         else:
             app.logger.error("could not find 'quote' in request")
             return "No 'quote' key in JSON", 500
-
-        return "Quote received", 200
     return "Could not parse quote", 500
-def get_hostnames():
-    hostnames = {"frontend" : socket.gethostname()}
+
+
+def get_hostnames() -> (str, str):
+    """returns tuple of (frontend_hostname, backend_hostname)"""
+    app.logger.info("Attempting to get backend hostname ...")
+    frontend_hostname = socket.gethostname()
     if check_if_backend_is_available():
-        response = requests.get(f"{BACKEND_URL}/hostname")
-        if response.status_code == 200:
-            resp_json = response.json()
-            app.logger.debug(resp_json)
-            if "backend" in resp_json:
-                hostnames["backend"] = resp_json['backend']
-                return hostnames
+        try:
+            response = requests.get(f"{BACKEND_URL}/hostname")
+            if response.status_code == 200:
+                resp_json = response.json()
+                app.logger.debug(resp_json)
+                if "backend" in resp_json:
+                    #  hostnames["backend"] = resp_json["backend"]
+                    backend_hostname = resp_json["backend"]
+                    return (frontend_hostname, backend_hostname)
+        except (requests.ConnectionError, KeyError) as err:
+            app.logger.error("Encountered an error trying to get hostname from backend: ")
+            app.logger.error(err)
+            hostnames["backend"] = "backend_not_connected"
+            return (frontend_hostname, None)
     app.logger.error("did not get a response 200 from backend")
-    return hostnames
+    return (frontend_hostname, None)
+
 
 @app.route("/hostname")
 def hostname():
     """return the hostname of the given container"""
-    return jsonify(get_hostnames())
+    frontend_hostname, backend_hostname = get_hostnames()
+    hostnames = {"frontend": frontend_hostname, "backend": backend_hostname}
+    return jsonify(hostnames)

@@ -13,7 +13,7 @@ import db
 from quotes import default_quotes
 
 # configure logging
-logging.basicConfig(level=logging.DEBUG, format=f"%(asctime)s %(levelname)s: %(message)s")
+logging.basicConfig(level=logging.DEBUG, format="%(asctime)s %(levelname)s: %(message)s")
 
 # create the flask app
 app = Flask(__name__)
@@ -72,12 +72,10 @@ def check_db_creds_are_set() -> bool:
 def check_if_db_is_available() -> bool:
     """Check if the db is reachable and should be used"""
     app.logger.info("Checking connection to the database ...")
-
     if check_db_creds_are_set():
         return db.check_connection(DB_CONN)
-    else:
-        app.logger.warning("database connection environment variables not set, cannot test connection.")
-        return False
+    app.logger.warning("database connection environment variables not set, cannot test connection.")
+    return False
 
 
 @app.route("/check-db-connection")
@@ -85,8 +83,7 @@ def check_db_connection():
     """Other services can ask if the db is connected."""
     if check_if_db_is_available():
         return jsonify({"db-connected": "true"})
-    else:
-        return jsonify({"db-connected": "false"})
+    return jsonify({"db-connected": "false"})
 
 
 @app.route("/add-quote", methods=["POST"])
@@ -96,11 +93,11 @@ def add_quote():
         request_json = request.get_json()
 
         if "quote" in request_json:
-            quote = request_json["quote"]
-            QUOTES.append(quote)
+            quote_to_insert = request_json["quote"]
+            QUOTES.append(quote_to_insert)
 
             if check_if_db_is_available():
-                inserted = db.insert_quote(quote, DB_CONN)
+                inserted = db.insert_quote(quote_to_insert, DB_CONN)
                 if inserted:
                     app.logger.info(f"Successfully inserted '{quote}' into db.")
                 else:
@@ -117,9 +114,9 @@ def add_quote():
 def quotes():
     """return all quotes as JSON"""
     if check_if_db_is_available():
-        quotes = db.get_quotes(DB_CONN)
-        if quotes:
-            return jsonify(quotes)
+        all_quotes = db.get_quotes(DB_CONN)
+        if all_quotes:
+            return jsonify(all_quotes)
         return jsonify([])
     return jsonify(QUOTES)
 
@@ -128,13 +125,14 @@ def quotes():
 def quote():
     """return single random quote"""
     if check_if_db_is_available():
-        quotes = db.get_quotes(DB_CONN)
-        if quotes:
-            return random.choice(quotes)
+        all_quotes = db.get_quotes(DB_CONN)
+        if all_quotes:
+            return random.choice(all_quotes)
         app.logger.error("Could not get quotes from the database.")
         return ""
     # if db not available, use in-memory quotes
     return random.choice(QUOTES)
+
 
 @app.route("/hostname")
 def hostname():
