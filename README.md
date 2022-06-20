@@ -2,7 +2,7 @@
 
 Small example flask application that displays quotes.
 
-Developed to be used for training purposes, working with containerized / microservice applications.
+Developed to be used for training purposes, working with containerized / micro service applications.
 
 ## Application
 
