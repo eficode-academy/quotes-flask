@@ -6,8 +6,23 @@ function getAll() {
   get_json("/quotes");
 }
 function getHostnames(){
-  
+  var endpoint = "/hostname";
+  var xhttp = new XMLHttpRequest();
+  xhttp.onload = function () {
+    if (this.status == 200) {
+      console.log(this.responseText);
+      var data= JSON.parse(this.responseText)
+      document.getElementById("backend_hostname").innerHTML="Backend: "+data.backend
+      document.getElementById("frontend_hostname").innerHTML="Frontend: "+data.frontend
+    }
+  };
+  xhttp.open("GET", endpoint, true);
+  xhttp.send();
 }
+var getbackendinfo = setInterval(function() {
+  getHostnames();
+  
+}, 1000);
 
 function get(endpoint) {
   var xhttp = new XMLHttpRequest();

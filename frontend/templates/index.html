@@ -103,10 +103,10 @@
       </div>
       <div class="container p-3">
         <hr />
-        <h4>Pod Names (updated on page load):</h4>
-        <span class="badge bg-success">Frontend: {{ frontend_hostname }}</span>
+        <h4>Pod Names (updated periodically):</h4>
+        <span class="badge bg-success" id="frontend_hostname">Frontend: {{ frontend_hostname }}</span>
          {% if backend %}
-        <span class="badge bg-success">Backend:  {{ backend_hostname }}</span>
+        <span class="badge bg-success" id="backend_hostname">Backend:  {{ backend_hostname }}</span>
         {% else %}
         <span class="badge bg-secondary">Backend:  no pod</span>
         {% endif %}
