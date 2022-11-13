@@ -76,13 +76,15 @@
                 <td> Name </td>
                 <td> Hostname </td>
                 <td> Online </td>
+                <td> Version </td>
               </tr>
             </thead>
             <tbody>
               <tr>
                 <td>Frontend</td>
                 <td><span class="badge bg-success" id="frontend_hostname"> {{ frontend_hostname }}</span></td>
-                <td><span class="badge bg-success">connected</span></td>
+                <td><span class="badge bg-success" id="frontend_connection" >connected</span></td>
+                <td><span class="badge bg-success" id="frontend_version" > not implemented</span></td>
               </tr>
               <tr>
                 <td>Backend</td>
@@ -95,11 +97,12 @@
                 </td>
                 <td>
                   {% if backend %}
-                  <span class="badge bg-success">connected</span>
+                  <span class="badge bg-success" id="backend_connection">connected</span>
                   {% else %}
-                  <span class="badge bg-secondary">no connection</span>
+                  <span class="badge bg-secondary" id="backend_connection">no connection</span>
                   {% endif %}
                 </td>
+                <td><span class="badge bg-success" id="backend_version" > not implemented</span></td>
               </tr>
               <tr>
                 <td>
@@ -115,6 +118,7 @@
                   <span class="badge bg-secondary">no connection</span>
                   {% endif %}
                 </td>
+                <td><span class="badge bg-success" id="database_version" > not implemented</span></td>
               </tr>
             </tbody>
           </table>

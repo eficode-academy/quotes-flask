@@ -31,7 +31,6 @@ BACKEND_ENDPOINT = bool(BACKEND_HOST and BACKEND_PORT)
 # build the url for the backend
 BACKEND_URL = f"http://{BACKEND_HOST}:{BACKEND_PORT}"
 
-
 def check_backend_endpoint_env_var() -> bool:
     """Checks if the user has set the backend host environment variable"""
     if BACKEND_ENDPOINT:
@@ -197,3 +196,26 @@ def hostname():
     frontend_hostname, backend_hostname = get_hostnames()
     hostnames = {"frontend": frontend_hostname, "backend": backend_hostname}
     return jsonify(hostnames)
+
+@app.route("/version")
+def version():
+    """return the version of the frontend"""
+    return jsonify({"version": os.environ.get("APP_VERSION", "unknown")})
+
+@app.route("/backend/version")
+def backend_version():
+    """return the version of the backend"""
+    response = requests.get(f"{BACKEND_URL}/version")
+    if response.status_code == 200:
+        return response.text
+    app.logger.error("did not get a response 200 from backend")
+    return jsonify({"version": "error getting version"})
+@app.route("/database/version")
+def database_version():
+    """return the version of the backend"""
+    response = requests.get(f"{BACKEND_URL}/database/version")
+    if response.status_code == 200:
+        return response.text
+    app.logger.error("did not get a response 200 from backend" + response.text)
+
+    return jsonify({"version": "error getting version"})

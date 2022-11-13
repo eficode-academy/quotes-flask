@@ -82,6 +82,25 @@ def create_table(db_conn: dict) -> bool:
         app.logger.error(f"when creating table: {err}")
         return False
 
+def get_version(db_conn: dict) -> str:
+    """check the version of the database"""
+    app.logger.info("Checking the version of the database ...")
+    try:
+        with psycopg2.connect(
+            host=db_conn["host"],
+            port=db_conn["port"],
+            user=db_conn["user"],
+            password=db_conn["password"],
+            database=db_conn["name"],
+        ) as connection:
+            with connection.cursor() as cursor:
+                cursor.execute("SHOW server_version;")
+                res = cursor.fetchone()
+                app.logger.info(f"Database version: {res[0]}")
+                return res[0]
+    except psycopg2.DatabaseError as err:
+        app.logger.error(f"when checking database version: {err}")
+        return None
 
 def check_connection(db_conn: dict) -> bool:
     """check if the db is connected"""

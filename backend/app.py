@@ -138,3 +138,16 @@ def quote():
 def hostname():
     """return the hostname of the given container"""
     return jsonify({"backend": socket.gethostname()})
+
+@app.route("/version")
+def version():
+    """return the version of the given container"""
+    return jsonify({"version": os.environ.get("APP_VERSION", "unknown")})
+
+@app.route("/database/version")
+def db_version():
+    """return the version of the database"""
+    if check_if_db_is_available():
+        app.logger.info("Getting database version ...")
+        return jsonify({"version":db.get_version(DB_CONN)})
+    return jsonify({"version": "unknown"})
