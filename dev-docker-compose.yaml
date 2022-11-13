@@ -12,7 +12,7 @@ services:
       - ./frontend:/app
     environment:
       FLASK_ENV: development
-      not_running_in_kubernetes: true # disable k8s specific functionality
+      not_running_in_kubernetes: "true" # disable k8s specific functionality
       backend_host: backend
       backend_port: 5000
     restart: always

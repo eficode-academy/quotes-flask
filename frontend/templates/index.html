@@ -99,10 +99,11 @@
                     <td>Name</td>
                     <td>Hostname</td>
                     <td>Online</td>
+                    <td>Version</td>
                   </tr>
                 </thead>
                 <tbody>
-                  <tr>
+                  <tr id="frontend-pod-names">
                     <td>Frontend</td>
                     <td>
                       <span class="badge bg-success" id="frontend_hostname">
@@ -110,8 +111,9 @@
                       >
                     </td>
                     <td><span class="badge bg-success">connected</span></td>
+                    <td><span class="badge bg-success" id="frontend_version" > waiting for response</span></td>
                   </tr>
-                  <tr>
+                  <tr id="backend-pod-names">
                     <td>Backend</td>
                     <td>
                       {% if backend %}
@@ -129,8 +131,9 @@
                       <span class="badge bg-secondary">no connection</span>
                       {% endif %}
                     </td>
+                    <td><span class="badge bg-success" id="backend_version" > waiting for response</span></td>
                   </tr>
-                  <tr>
+                  <tr id="database-pod-names">
                     <td>Database</td>
                     <td>
                       <span class="badge bg-secondary">not implemented</span>
@@ -142,6 +145,7 @@
                       <span class="badge bg-secondary">no connection</span>
                       {% endif %}
                     </td>
+                    <td><span class="badge bg-success" id="database_version" > waiting for response</span></td>
                   </tr>
                 </tbody>
               </table>
@@ -182,9 +186,41 @@
             >
               Switch view
             </button>
+            <p id="application-status-message">
+              Waiting for response from frontend pod ...
+            </p>
+            <table class="table">
+              <thead>
+                <tr>
+                  <td>Name</td>
+                  <td>Pod name(s)</td>
+                  <td>Version</td>
+                </tr>
+              </thead>
+              <tbody>
+                <tr id="frontend-pod-names">
+                  <td>Frontend</td>
+                  <td>Waiting for response.</td>
+                  
+                </tr>
+                <tr id="backend-pod-names">
+                  <td>Backend</td>
+                  <td>Waiting for response.</td>
+                  <td><span class="badge bg-success" id="backend_version" > waiting for response</span></td>
+                </tr>
+                <tr id="database-pod-names">
+                  <td>Database</td>
+                  <td>Waiting for response.</td>
+                  <td><span class="badge bg-success" id="database_version" > waiting for response</span></td>
+                </tr>
+              </tbody>
+            </table>
           </div>
         </div>
       </div>
     </div>
+
+  </div>
   </body>
+
 </html>
