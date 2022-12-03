@@ -1,29 +1,7 @@
-function getRandom() {
-  get("/random-quote");
-}
-
-function getAll() {
-  get_json("/quotes");
-}
-function getHostnames() {
-  var endpoint = "/hostname";
-  var xhttp = new XMLHttpRequest();
-  xhttp.onload = function () {
-    if (this.status == 200) {
-      var data = JSON.parse(this.responseText);
-      document.getElementById("backend_hostname").innerHTML = data.backend;
-      document.getElementById("frontend_hostname").innerHTML = data.frontend;
-    }
-  };
-  xhttp.open("GET", endpoint, true);
-  xhttp.send();
-}
-var getbackendinfo = setInterval(function () {
-  getHostnames();
-}, 1000);
-
-function get(endpoint) {
-  var xhttp = new XMLHttpRequest();
+// get a single random quote and update the quotes container with contents
+function getRandomQuote() {
+  endpoint = "/random-quote";
+  xhttp = new XMLHttpRequest();
   xhttp.onload = function () {
     if (this.status == 200) {
       document.getElementById("quotes-container").innerHTML = this.responseText;
@@ -33,21 +11,22 @@ function get(endpoint) {
   xhttp.send();
 }
 
-function get_json(endpoint) {
-  var xhttp = new XMLHttpRequest();
+function getAllQuotes() {
+  endpoint = "/quotes";
+  xhttp = new XMLHttpRequest();
   xhttp.onload = function () {
     if (this.status == 200) {
       // reset contents of quotes-container
       document.getElementById("quotes-container").innerHTML = "";
       // parse received json body to list
-      var quotes = JSON.parse(this.responseText);
+      quotes = JSON.parse(this.responseText);
       // find the html container
-      var container = document.querySelector("#quotes-container");
+      container = document.querySelector("#quotes-container");
       // create a ul tag
-      var ul = document.createElement("ul");
+      ul = document.createElement("ul");
       // iterate over quotes and creat a li tag for each
       quotes.forEach(function (quote) {
-        var li = document.createElement("li");
+        li = document.createElement("li");
         li.textContent = quote;
         ul.appendChild(li);
       });
@@ -59,6 +38,25 @@ function get_json(endpoint) {
   xhttp.send();
 }
 
+function getHostnames() {
+  endpoint = "/hostname";
+  xhttp = new XMLHttpRequest();
+  xhttp.onload = function () {
+    if (this.status == 200) {
+      data = JSON.parse(this.responseText);
+      document.getElementById("backend_hostname").innerHTML = data.backend;
+      document.getElementById("frontend_hostname").innerHTML = data.frontend;
+    }
+  };
+  xhttp.open("GET", endpoint, true);
+  xhttp.send();
+}
+
+// update the hostnames every second
+getbackendinfo = setInterval(function () {
+  getHostnames();
+}, 1000);
+
 function addQuote(e) {
   e.preventDefault();
   try {
@@ -66,7 +64,7 @@ function addQuote(e) {
       quote: document.querySelector("#quote").value,
     };
 
-    var xhttp = new XMLHttpRequest();
+    xhttp = new XMLHttpRequest();
     xhttp.onload = function () {
       if (this.status == 200) {
         document.getElementById("quotes-container").innerHTML =
