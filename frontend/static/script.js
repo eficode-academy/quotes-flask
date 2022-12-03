@@ -5,22 +5,21 @@ function getRandom() {
 function getAll() {
   get_json("/quotes");
 }
-function getHostnames(){
+function getHostnames() {
   var endpoint = "/hostname";
   var xhttp = new XMLHttpRequest();
   xhttp.onload = function () {
     if (this.status == 200) {
-      var data= JSON.parse(this.responseText)
-      document.getElementById("backend_hostname").innerHTML=data.backend
-      document.getElementById("frontend_hostname").innerHTML=data.frontend
+      var data = JSON.parse(this.responseText);
+      document.getElementById("backend_hostname").innerHTML = data.backend;
+      document.getElementById("frontend_hostname").innerHTML = data.frontend;
     }
   };
   xhttp.open("GET", endpoint, true);
   xhttp.send();
 }
-var getbackendinfo = setInterval(function() {
+var getbackendinfo = setInterval(function () {
   getHostnames();
-  
 }, 1000);
 
 function get(endpoint) {
