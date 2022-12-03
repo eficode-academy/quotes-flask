@@ -60,7 +60,7 @@ function get_json(endpoint) {
   xhttp.send();
 }
 
-function addCookie(e) {
+function addQuote(e) {
   e.preventDefault();
   try {
     const params = {
