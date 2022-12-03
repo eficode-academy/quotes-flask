@@ -9,6 +9,7 @@ services:
     environment:
       backend_host: backend
       backend_port: 5000
+      not_running_in_kubernetes: true # disable k8s specific functionality
     restart: always
 
   backend:

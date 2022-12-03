@@ -204,3 +204,55 @@ def hostname():
     frontend_hostname, backend_hostname = get_hostnames()
     hostnames = {"frontend": frontend_hostname, "backend": backend_hostname}
     return jsonify(hostnames)
+
+
+def get_pod_current_namespace() -> str:
+    """Return the name of the namespace this pod is currently running in"""
+    # TODO implement
+    namespace = "default"
+    return namespace
+
+
+@APP.route("/pod_names")
+def get_pod_names() -> Response:
+    """
+    Query kubernetes API to get hostnames of all frontend, backend and postgres pods.
+    Returns JSON dict of pod names.
+    """
+
+    # only try to contact the kubernetes api server, if actually running in kubernetes
+    if NOT_RUNNING_IN_KUBERNETES:
+        return jsonify("Not currently running in Kubernetes")
+
+    # get config for querying the k8s api from the namespace and the service account
+    kubernetes_config.load_incluster_config()
+    # get what namespace this pod is running in
+    namespace = get_pod_current_namespace()
+    # create a client for the k8s api
+    k8s_client = kubernetes_client.CoreV1Api()
+    # query the API for all of the pods in the current namespace
+    response = k8s_client.list_namespaced_pod(namespace=namespace)
+    # hold a list of pods for each application
+    frontend_pods = []
+    backend_pods = []
+    postgres_pods = []
+    # iterate over the returned pods
+    # TODO this coud probably be done more elegantly
+    for pod in response.items:
+        pod_name = pod.metadata.name
+        if "frontend" in pod_name:
+            frontend_pods.append(pod_name)
+        elif "backend" in pod_name:
+            backend_pods.append(pod_name)
+        elif "postgres" in pod_name:
+            postgres_pods.append(pod_name)
+        else:
+            log.info(
+                str.format(
+                    "Pod Name: `%s` dit not match any of the substrings `frontend`, `backend` or `postgres`.", pod_name
+                )
+            )
+
+    pod_names = {"frontend_pods": frontend_pods, "backend_pods": backend_pods, "postgres_pods": postgres_pods}
+
+    return jsonify(pod_names)
