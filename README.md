@@ -26,7 +26,7 @@ Application images are built on pushes to the main branch using GitHub Actions.
 
 ### docker-compose
 
-For a simple proof-of-concept, the includes `docker-compose.yaml` can be used to deploy the application.
+For a simple proof-of-concept, the included `docker-compose.yaml` can be used to deploy the application.
 
 ```sh
 docker-compose up -d
@@ -46,6 +46,8 @@ kubectl apply -f k8s/
 ```
 
 The manifests will create a NodePort service to access the frontend.
+
+On linux you can simply connect to the `kind` container:
 
 Use the following commands to get the IP address of the host:
 
@@ -99,7 +101,7 @@ kind create cluster
 okteto deploy
 ```
 
-Okteto will not create any outward facing service by default, so we cat create a NodePort serivce, if we need it:
+Okteto will not create any outward facing service by default, so we can create a NodePort serivce, if we need it:
 
 ```sh
 kubectl expose deployment frontend-okteto --port 5000 -type NodePort
