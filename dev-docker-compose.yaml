@@ -5,32 +5,44 @@ services:
     container_name: frontend
     build:
       context: frontend
-      dockerfile: Dockerfile-dev
+      dockerfile: Dockerfile
     ports:
       - 5000:5000
     volumes:
       - ./frontend:/app
     environment:
+      FLASK_ENV: development
       backend_host: backend
       backend_port: 5000
     restart: always
+    entrypoint: # overwrite entrypoint with development flask webserver
+      - flask
+      - run
+      - -h
+      - 0.0.0.0
 
   backend:
     container_name: backend
     build:
       context: backend
-      dockerfile: Dockerfile-dev
+      dockerfile: Dockerfile
     ports:
       - 8888:5000
     volumes:
       - ./backend:/app
     environment:
+      FLASK_ENV: development
       db_host: postgres
       db_port: 5432
       db_user: superuser
       db_password: complicated
       db_name: quotes
     restart: always
+    entrypoint: # overwrite entrypoint with development flask webserver
+      - flask
+      - run
+      - -h
+      - 0.0.0.0
 
   postgres:
     container_name: postgres

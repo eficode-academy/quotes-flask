@@ -11,7 +11,7 @@ RUN \
     apk del --no-cache .build
 
 # install library needed for postgres interface
-RUN apk add --no-cache postgresql-libs
+RUN apk add --no-cache postgresql-libs bash
 
 COPY . /app
 
