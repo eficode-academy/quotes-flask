@@ -1,6 +1,10 @@
 ---
 name: Lint Python
 
+on:
+  push:
+    branches:
+      - "*"
 jobs:
   build:
     runs-on: ubuntu-latest
