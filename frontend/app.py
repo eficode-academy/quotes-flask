@@ -37,6 +37,20 @@ BACKEND_ENDPOINT = bool(BACKEND_HOST and BACKEND_PORT)
 BACKEND_URL = f"http://{BACKEND_HOST}:{BACKEND_PORT}"
 # whether the container is running in kubernetes, assumes that it is
 NOT_RUNNING_IN_KUBERNETES = bool(os.environ.get("not_running_in_kubernetes", False))
+# namespace pod is running in, must be set in the deployment, or loaded using downward api
+NAMESPACE = os.environ.get("namespace", False)
+
+if NAMESPACE:
+    log.info(
+        str.format(
+            "Found `namespace` environment variable with value %s, will use it to query pod names in the current namespace.",
+            NAMESPACE,
+        )
+    )
+else:
+    log.warning(
+        "Namespace is not configured, set the environment variable `namespace` to the namespace the pod is deployed in to enable querying pod names."
+    )
 
 
 def check_backend_endpoint_env_var() -> bool:
@@ -206,13 +220,6 @@ def hostname():
     return jsonify(hostnames)
 
 
-def get_pod_current_namespace() -> str:
-    """Return the name of the namespace this pod is currently running in"""
-    # TODO implement
-    namespace = "default"
-    return namespace
-
-
 @APP.route("/pod_names")
 def get_pod_names() -> Response:
     """
@@ -222,16 +229,20 @@ def get_pod_names() -> Response:
 
     # only try to contact the kubernetes api server, if actually running in kubernetes
     if NOT_RUNNING_IN_KUBERNETES:
-        return jsonify("Not currently running in Kubernetes")
+        return jsonify({"message": "Not currently running in Kubernetes, cannot get pod names."})
+    if not NAMESPACE:
+        return jsonify(
+            {
+                "message": "`namespace` environment variable not set, specify to enable querying the Kubernetes API for pod names."
+            }
+        )
 
     # get config for querying the k8s api from the namespace and the service account
     kubernetes_config.load_incluster_config()
-    # get what namespace this pod is running in
-    namespace = get_pod_current_namespace()
     # create a client for the k8s api
     k8s_client = kubernetes_client.CoreV1Api()
     # query the API for all of the pods in the current namespace
-    response = k8s_client.list_namespaced_pod(namespace=namespace)
+    response = k8s_client.list_namespaced_pod(namespace=NAMESPACE)
     # hold a list of pods for each application
     frontend_pods = []
     backend_pods = []
@@ -249,7 +260,8 @@ def get_pod_names() -> Response:
         else:
             log.info(
                 str.format(
-                    "Pod Name: `%s` dit not match any of the substrings `frontend`, `backend` or `postgres`.", pod_name
+                    "Pod Name: `% s` dit not match any of the substrings `frontend`, `backend` or `postgres`.",
+                    pod_name,
                 )
             )
 
