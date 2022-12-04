@@ -220,7 +220,7 @@ def hostname():
     return jsonify(hostnames)
 
 
-@APP.route("/pod_names")
+@APP.route("/pod-names")
 def get_pod_names() -> Response:
     """
     Query kubernetes API to get hostnames of all frontend, backend and postgres pods.

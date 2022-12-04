@@ -84,60 +84,35 @@
             {% else %}
 
             <h4>Connect backend to enable adding new quotes!</h4>
+            <p>(then reload the page)</p>
 
             {% endif %}
           </div>
           <div class="col-md-4 offset-md-2">
-            <h2>Application status</h2>
-            <table class="table table-striped">
+            <h2>Application Status</h2>
+            <p>(Updates every 1 second)</p>
+            <p id="application-status-message">
+              Waiting for response from frontend pod ...
+            </p>
+            <table class="table">
               <thead>
                 <tr>
                   <td>Name</td>
-                  <td>Hostname</td>
-                  <td>Online</td>
+                  <td>Pod name(s)</td>
                 </tr>
               </thead>
               <tbody>
-                <tr>
+                <tr id="frontend-pod-names">
                   <td>Frontend</td>
-                  <td>
-                    <span class="badge bg-success" id="frontend_hostname">
-                      {{ frontend_hostname }}</span
-                    >
-                  </td>
-                  <td><span class="badge bg-success">connected</span></td>
+                  <td>Waiting for response.</td>
                 </tr>
-                <tr>
+                <tr id="backend-pod-names">
                   <td>Backend</td>
-                  <td>
-                    {% if backend %}
-                    <span class="badge bg-success" id="backend_hostname"
-                      >{{ backend_hostname }}</span
-                    >
-                    {% else %}
-                    <span class="badge bg-secondary">no pod</span>
-                    {% endif %}
-                  </td>
-                  <td>
-                    {% if backend %}
-                    <span class="badge bg-success">connected</span>
-                    {% else %}
-                    <span class="badge bg-secondary">no connection</span>
-                    {% endif %}
-                  </td>
+                  <td>Waiting for response.</td>
                 </tr>
-                <tr>
+                <tr id="database-pod-names">
                   <td>Database</td>
-                  <td>
-                    <span class="badge bg-secondary">not implemented</span>
-                  </td>
-                  <td>
-                    {% if database %}
-                    <span class="badge bg-success">connected</span>
-                    {% else %}
-                    <span class="badge bg-secondary">no connection</span>
-                    {% endif %}
-                  </td>
+                  <td>Waiting for response.</td>
                 </tr>
               </tbody>
             </table>

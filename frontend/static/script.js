@@ -53,8 +53,85 @@ function getHostnames() {
 }
 
 // update the hostnames every second
-getbackendinfo = setInterval(function () {
-  getHostnames();
+// updatePodHostnames = setInterval(function () {
+// getHostnames();
+// }, 1000);
+
+function updatePodNameRow(name, rowId, podNames) {
+  document.getElementById(rowId).innerHTML = "";
+  tr = document.querySelector("#" + rowId);
+  pod_name_td = document.createElement("td");
+  pod_name_td.textContent = name + ":";
+  tr.appendChild(pod_name_td);
+
+  podNames.forEach(function (pod) {
+    console.log(pod);
+    td = document.createElement("td");
+    td.textContent = pod;
+    td.className = "badge bg-success";
+    tr.appendChild(td);
+  });
+}
+
+function updatePodNameRowNoPodsFound(name, rowId) {
+  document.getElementById(rowId).innerHTML = "";
+  tr = document.querySelector("#" + rowId);
+  pod_name_td = document.createElement("td");
+  pod_name_td.textContent = name + ":";
+  tr.appendChild(pod_name_td);
+
+  no_pod_td = document.createElement("td");
+  no_pod_td.textContent = "No pods found";
+  no_pod_td.className = "badge bg-secondary";
+  tr.appendChild(no_pod_td);
+}
+
+function getPodNames() {
+  endpoint = "/pod-names";
+  xhttp = new XMLHttpRequest();
+  xhttp.onload = function () {
+    if (this.status == 200) {
+      data = JSON.parse(this.responseText);
+      // if there is a message, there are no pod names
+      if ("message" in data) {
+        console.log("Message received when querying pod-names:");
+        console.log(data.message);
+        document.getElementById("application-status-message").innerHTML =
+          data.message;
+      } else {
+        // otherwise get the pod names
+        document.getElementById("application-status-message").innerHTML = ""; // set to nothing when no message
+        console.log(data);
+        console.log("Got pod names, updating webpage ...");
+
+        // we talked with the frontend to get this request, so we assume
+        // there will always be atleast one frontend pod
+        frontend_pods = data.frontend_pods;
+        updatePodNameRow("Frontend", "frontend-pod-names", frontend_pods);
+
+        backend_pods = data.backend_pods;
+        if (backend_pods.length === 0) {
+          console.log("No backend pods found.");
+          updatePodNameRowNoPodsFound("Backend", "backend-pod-names");
+        } else {
+          updatePodNameRow("Backend", "backend-pod-names", backend_pods);
+        }
+
+        if (data.postgres_pods.length === 0) {
+          console.log("No database pods found.");
+          updatePodNameRowNoPodsFound("Database", "database-pod-names");
+        } else {
+          updatePodNameRow("Database", "database-pod-names", backend_pods);
+        }
+      }
+    }
+  };
+  xhttp.open("GET", endpoint, true);
+  xhttp.send();
+}
+
+updatePodNamesTable = setInterval(function () {
+  getPodNames();
 }, 1000);
 
 function addQuote(e) {
