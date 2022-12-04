@@ -6,12 +6,12 @@ on:
     branches:
       - "*"
 jobs:
-  build:
+  lint:
     runs-on: ubuntu-latest
 
     steps:
       - name: Checkout
         uses: actions/checkout@v2
 
-      - name: Build and push container images
+      - name: Lint python code
         run: bash ci/pylint.sh
