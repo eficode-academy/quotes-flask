@@ -1,0 +1,13 @@
+---
+name: Lint Python
+
+jobs:
+  build:
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v2
+
+      - name: Build and push container images
+        run: bash ci/pylint.sh

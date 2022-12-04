@@ -22,10 +22,3 @@ echo "Tagging images ..."
 
 docker tag $FRONTEND_IMAGE $RELEASE_FRONTEND_IMAGE
 docker tag $BACKEND_IMAGE $RELEASE_BACKEND_IMAGE
-
-echo "Pushing images ..."
-
-docker push $FRONTEND_IMAGE
-docker push $BACKEND_IMAGE
-docker push $RELEASE_FRONTEND_IMAGE
-docker push $RELEASE_BACKEND_IMAGE

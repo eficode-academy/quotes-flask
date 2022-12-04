@@ -1,5 +1,5 @@
 ---
-name: Build docker images
+name: Build and push docker images
 
 on:
   push:
@@ -19,5 +19,8 @@ jobs:
       - name: Login to ghcr.io
         run: echo "${{ secrets.GITHUB_TOKEN }}" | docker login ghcr.io -u $ --password-stdin
 
-      - name: Build and push container images 
-        run: bash ci/build_push_docker.sh
+      - name: Build container images
+        run: bash ci/build_docker.sh
+
+      - name: Push container images
+        run: bash ci/push_docker.sh
