@@ -4,7 +4,7 @@ function getRandomQuote() {
   xhttp = new XMLHttpRequest();
 }
 
-  function getRandom() {
+function getRandom() {
   get("/random-quote");
 }
 
