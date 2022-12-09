@@ -7,6 +7,7 @@ import random
 import socket
 import logging
 import requests
+import kubernetes
 from kubernetes import client as kubernetes_client
 from kubernetes import config as kubernetes_config
 from flask import Flask, render_template, jsonify, request
@@ -36,15 +37,19 @@ BACKEND_ENDPOINT = bool(BACKEND_HOST and BACKEND_PORT)
 # build the url for the backend
 BACKEND_URL = f"http://{BACKEND_HOST}:{BACKEND_PORT}"
 # whether the container is running in kubernetes, assumes that it is
-NOT_RUNNING_IN_KUBERNETES = bool(os.environ.get("not_running_in_kubernetes", False))
+ENABLE_KUBERNETS_FEATURES = bool(os.environ.get("not_running_in_kubernetes", True))
 # namespace pod is running in, must be set in the deployment, or loaded using downward api
 NAMESPACE = os.environ.get("namespace", False)
 
+if ENABLE_KUBERNETS_FEATURES:
+    log.info("Running in Kubernetes mode.")
+else:
+    log.info("Not running in Kuberetes, disabling Kubernetes specific features.")
+
 if NAMESPACE:
     log.info(
-        str.format(
-            "Found `namespace` environment variable with value %s, will use it to query pod names in the current namespace.",
-            NAMESPACE,
+        "Found `namespace` environment variable with value `{namespace}`, will use it to query pod names in the current namespace.".format(
+            namespace=NAMESPACE
         )
     )
 else:
@@ -57,8 +62,8 @@ def check_backend_endpoint_env_var() -> bool:
     """Checks if the user has set the backend host environment variable"""
     if BACKEND_ENDPOINT:
         log.info(
-            str.format(
-                "Found 'backend_host' environment variable, will attempt to connect to the backend on: %s", BACKEND_URL
+            "Found 'backend_host' environment variable, will attempt to connect to the backend on: `{URL}`".format(
+                URL=BACKEND_URL
             )
         )
         return True
@@ -228,7 +233,7 @@ def get_pod_names() -> Response:
     """
 
     # only try to contact the kubernetes api server, if actually running in kubernetes
-    if NOT_RUNNING_IN_KUBERNETES:
+    if not ENABLE_KUBERNETS_FEATURES:
         return jsonify({"message": "Not currently running in Kubernetes, cannot get pod names."})
     if not NAMESPACE:
         return jsonify(
@@ -242,7 +247,18 @@ def get_pod_names() -> Response:
     # create a client for the k8s api
     k8s_client = kubernetes_client.CoreV1Api()
     # query the API for all of the pods in the current namespace
-    response = k8s_client.list_namespaced_pod(namespace=NAMESPACE)
+    response = None
+    try:
+        response = k8s_client.list_namespaced_pod(namespace=NAMESPACE)
+    except (kubernetes.client.exceptions.ApiException):
+        log.error("Caugth an API error when trying to query the Kubernetes API to get pod info.")
+        log.error("You are most likely missing a service account with read access for pods in this namespace.")
+        return jsonify(
+            {
+                "message": "Got an API error when trying to get pod names from the k8s API, you are likely missing a ServiceAccount with proper permissions, see the readme for quotes-flask."
+            }
+        )
+
     # hold a list of pods for each application
     frontend_pods = []
     backend_pods = []

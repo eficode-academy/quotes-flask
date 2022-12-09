@@ -19,9 +19,10 @@ dev:
       - 9000:9000
     environment:
       FLASK_ENV: development
+      enable_kubernetes_features: true
+      namespace: default
       backend_host: backend
       backend_port: 5000
-      namespace: default
 
   backend:
     command: flask run -h 0.0.0.0 --reload
