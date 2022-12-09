@@ -53,9 +53,9 @@ function getHostnames() {
 }
 
 // update the hostnames every second
-// updatePodHostnames = setInterval(function () {
-// getHostnames();
-// }, 1000);
+updatePodHostnames = setInterval(function () {
+  getHostnames();
+}, 1000);
 
 function updatePodNameRow(name, rowId, podNames) {
   document.getElementById(rowId).innerHTML = "";
@@ -106,22 +106,24 @@ function getPodNames() {
 
         // we talked with the frontend to get this request, so we assume
         // there will always be atleast one frontend pod
-        frontend_pods = data.frontend_pods;
-        updatePodNameRow("Frontend", "frontend-pod-names", frontend_pods);
+        updatePodNameRow("Frontend", "frontend-pod-names", data.frontend_pods);
 
-        backend_pods = data.backend_pods;
-        if (backend_pods.length === 0) {
+        if (data.backend_pods.length === 0) {
           console.log("No backend pods found.");
           updatePodNameRowNoPodsFound("Backend", "backend-pod-names");
         } else {
-          updatePodNameRow("Backend", "backend-pod-names", backend_pods);
+          updatePodNameRow("Backend", "backend-pod-names", data.backend_pods);
         }
 
         if (data.postgres_pods.length === 0) {
           console.log("No database pods found.");
           updatePodNameRowNoPodsFound("Database", "database-pod-names");
         } else {
-          updatePodNameRow("Database", "database-pod-names", backend_pods);
+          updatePodNameRow(
+            "Database",
+            "database-pod-names",
+            data.postgres_pods
+          );
         }
       }
     }
@@ -133,6 +135,22 @@ function getPodNames() {
 updatePodNamesTable = setInterval(function () {
   getPodNames();
 }, 1000);
+
+function switchView() {
+  containerDiv = document.getElementById("container-hostname-view");
+  if (containerDiv.style.display === "none") {
+    containerDiv.style.display = "block";
+  } else {
+    containerDiv.style.display = "none";
+  }
+
+  k8sHostnameDiv = document.getElementById("k8s-view");
+  if (k8sHostnameDiv.style.display === "none") {
+    k8sHostnameDiv.style.display = "block";
+  } else {
+    k8sHostnameDiv.style.display = "none";
+  }
+}
 
 function addQuote(e) {
   e.preventDefault();
