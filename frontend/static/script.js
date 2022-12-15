@@ -2,6 +2,81 @@
 function getRandomQuote() {
   endpoint = "/random-quote";
   xhttp = new XMLHttpRequest();
+}
+
+function getRandom() {
+  get("/random-quote");
+}
+
+function getAll() {
+  get_json("/quotes");
+}
+
+function getVersion(endpoint, element)
+{
+  make_call(endpoint, function() {
+    if ( this.status == 200) {
+      var json = JSON.parse(this.responseText);
+      document.getElementById(element).innerHTML = json.version;
+    }else{
+      document.getElementById(element).innerHTML = "Error";
+    }
+  })
+}
+
+function getDatabaseVersion()
+{
+  getVersion("/database/version", "database_version");
+}
+
+function getBackendVersion()
+{
+  getVersion("/backend/version", "backend_version");
+}
+
+function getFrontendVersion()
+{
+  getVersion("/version", "frontend_version");
+}
+
+function make_call(endpoint, method)
+{
+  var xhr = new XMLHttpRequest();
+  xhr.open("GET", endpoint, true);
+  xhr.timeout = 200;
+  xhr.onload = method;
+  xhr.send();
+}
+
+function getHostnames(){
+  var endpoint = "/hostname";
+  var xhttp = new XMLHttpRequest();
+  xhttp.onload = function () {
+    if (this.status == 200) {
+      var data= JSON.parse(this.responseText)
+      document.getElementById("backend_hostname").innerHTML=data.backend
+      document.getElementById("frontend_hostname").innerHTML=data.frontend
+    } else {
+      document.getElementById("backend_hostname").innerHTML="Error response"
+      document.getElementById("frontend_hostname").innerHTML="Error response"
+  };
+  }
+  xhttp.open("GET", endpoint, true);
+  xhttp.timeout = 200;
+  xhttp.ontimeout = function (e) {
+    document.getElementById("backend_hostname").innerHTML="Timeout"
+    document.getElementById("frontend_hostname").innerHTML="Timeout"
+  };
+  xhttp.send();
+}
+var periodicUpdates = setInterval(function() {
+  getFrontendVersion();
+  getBackendVersion();
+  getDatabaseVersion();
+}, 1000);
+
+function get(endpoint) {
+  var xhttp = new XMLHttpRequest();
   xhttp.onload = function () {
     if (this.status == 200) {
       document.getElementById("quotes-container").innerHTML = this.responseText;

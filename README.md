@@ -116,3 +116,14 @@ You can now make changes to the code, and these will be synchronized to the pod 
 
 When you are done, use `okteto destroy` to take down the Okteto deployment.
 Alternatively just delete the kind container.
+
+
+## Versioning releases
+
+By default, both Frontend and Backend will be build with the version "1.0.0", as defined in the Dockerfile.
+You can override this by setting the `VERSION` environment variable when building the image.
+
+```sh
+docker build --build-arg VERSION=1.0.1 -t quotes-flask-frontend frontend
+docker build --build-arg VERSION=1.0.1 -t quotes-flask-backend backend
+```

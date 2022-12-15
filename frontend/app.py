@@ -57,7 +57,6 @@ else:
         "Namespace is not configured, set the environment variable `namespace` to the namespace the pod is deployed in to enable querying pod names."
     )
 
-
 def check_backend_endpoint_env_var() -> bool:
     """Checks if the user has set the backend host environment variable"""
     if BACKEND_ENDPOINT:
@@ -284,3 +283,25 @@ def get_pod_names() -> Response:
     pod_names = {"frontend_pods": frontend_pods, "backend_pods": backend_pods, "postgres_pods": postgres_pods}
 
     return jsonify(pod_names)
+@APP.route("/version")
+def version():
+    """return the version of the frontend"""
+    return jsonify({"version": os.environ.get("APP_VERSION", "unknown")})
+
+@APP.route("/backend/version")
+def backend_version():
+    """return the version of the backend"""
+    response = requests.get(f"{BACKEND_URL}/version")
+    if response.status_code == 200:
+        return response.text
+    app.logger.error("did not get a response 200 from backend")
+    return jsonify({"version": "error getting version"})
+@APP.route("/database/version")
+def database_version():
+    """return the version of the backend"""
+    response = requests.get(f"{BACKEND_URL}/database/version")
+    if response.status_code == 200:
+        return response.text
+    app.logger.error("did not get a response 200 from backend" + response.text)
+
+    return jsonify({"version": "error getting version"})
