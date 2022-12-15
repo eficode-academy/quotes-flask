@@ -23,6 +23,7 @@ spec:
           ports:
             - containerPort: 5000
           resources: {}
+          imagePullPolicy: Always
           ### using hardcoded env vars
           # env:
           # - name: db_host
