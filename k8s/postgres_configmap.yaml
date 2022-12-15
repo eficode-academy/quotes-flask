@@ -6,5 +6,4 @@ data:
   db_host: postgres
   db_port: "5432"
   db_user: superuser
-  db_password: complicated
   db_name: quotes
