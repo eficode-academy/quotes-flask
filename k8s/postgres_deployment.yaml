@@ -55,4 +55,7 @@ spec:
           volumeMounts:
             - name: postgres-pvc
               mountPath: /var/lib/postgresql/data
+              subPath: postgres
+              # for AWS EBS we need to create a sub directory,
+              # see: https://stackoverflow.com/a/51174380
 status: {}

@@ -4,7 +4,8 @@ metadata:
   name: postgres-pvc
 spec:
   # default. Use `kubectl get sc` too what storage classes are configured
-  storageClassName: "standard"
+  storageClassName: "standard" # for kind
+  # storageClassName: "gp2"      # for eks
   accessModes:
     - ReadWriteOnce
   resources:
