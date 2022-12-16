@@ -7,8 +7,8 @@ services:
     ports:
       - 5000:5000
     environment:
-      backend_host: backend
-      backend_port: 5000
+      BACKEND_HOST: backend
+      BACKEND_PORT: 5000
       enable_kubernetes_features: "false" # disable k8s specific functionality
     restart: always
 

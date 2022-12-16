@@ -13,8 +13,8 @@ services:
     environment:
       FLASK_ENV: development
       not_running_in_kubernetes: "true" # disable k8s specific functionality
-      backend_host: backend
-      backend_port: 5000
+      BACKEND_HOST: backend
+      BACKEND_PORT: 5000
     restart: always
     entrypoint: # overwrite entrypoint with development flask webserver
       - flask

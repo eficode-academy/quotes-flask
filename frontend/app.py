@@ -30,8 +30,8 @@ APP.register_blueprint(healthz, url_prefix="/healthz")
 
 
 # Read environment variables
-BACKEND_HOST = os.environ.get("backend_host", False)
-BACKEND_PORT = os.environ.get("backend_port", False)
+BACKEND_HOST = os.environ.get("BACKEND_HOST", "backend")
+BACKEND_PORT = os.environ.get("BACKEND_PORT", 5000)
 # host for the backend, if not set default to False
 BACKEND_ENDPOINT = bool(BACKEND_HOST and BACKEND_PORT)
 # build the url for the backend
