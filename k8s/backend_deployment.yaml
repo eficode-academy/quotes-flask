@@ -26,43 +26,43 @@ spec:
           imagePullPolicy: Always
           ### using hardcoded env vars
           # env:
-          # - name: db_host
+          # - name: DB_HOST
           # value: postgres
-          # - name: db_port
+          # - name: DB_PORT
           # value: "5432"
-          # - name: db_user
+          # - name: DB_USER
           # value: superuser
-          # - name: db_password
+          # - name: DB_PASSWORD
           # value: complicated
-          # - name: db_name
+          # - name: DB_NAME
           # value: quotes
           ### using configMapKeyRef
           # env:
-          # - name: db_host
+          # - name: DB_HOST
           # valueFrom:
           # configMapKeyRef:
           # name: postgres-config
-          # key: db_host
-          # - name: db_port
+          # key: DB_HOST
+          # - name: DB_PORT
           # valueFrom:
           # configMapKeyRef:
           # name: postgres-config
-          # key: db_port
-          # - name: db_user
+          # key: DB_PORT
+          # - name: DB_USER
           # valueFrom:
           # configMapKeyRef:
           # name: postgres-config
-          # key: db_user
-          # - name: db_password
+          # key: DB_USER
+          # - name: DB_PASSWORD
           # valueFrom:
           # configMapKeyRef:
           # name: postgres-config
-          # key: db_password
-          # - name: db_name
+          # key: DB_PASSWORD
+          # - name: DB_NAME
           # valueFrom:
           # configMapKeyRef:
           # name: postgres-config
-          # key: db_name
+          # key: DB_NAME
           ### using envfrom to load all env vars in configmap
           envFrom:
             - configMapRef:

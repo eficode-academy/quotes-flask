@@ -29,11 +29,11 @@ db.import_app(app)
 
 
 # host for the backend, if not set default to False
-DATABASE_HOST = os.environ.get("db_host", False)
-DATABASE_PORT = os.environ.get("db_port", False)
-DATABASE_USER = os.environ.get("db_user", False)
-DATABASE_PASSWORD = os.environ.get("db_password", False)
-DATABASE_NAME = os.environ.get("db_name", False)
+DATABASE_HOST = os.environ.get("DB_HOST", False)
+DATABASE_PORT = os.environ.get("DB_PORT", False)
+DATABASE_USER = os.environ.get("DB_USER", False)
+DATABASE_PASSWORD = os.environ.get("DB_PASSWORD", False)
+DATABASE_NAME = os.environ.get("DB_NAME", False)
 
 DB_CONN = {
     "host": DATABASE_HOST,
@@ -89,6 +89,7 @@ def check_db_connection():
 @app.route("/add-quote", methods=["POST"])
 def add_quote():
     """add quote to list of quotes"""
+    global QUOTES
     if request.method == "POST":
         request_json = request.get_json()
 
@@ -118,6 +119,7 @@ def index():
 @app.route("/quotes")
 def quotes():
     """return all quotes as JSON"""
+    global QUOTES
     if check_if_db_is_available():
         all_quotes = db.get_quotes(DB_CONN)
         if all_quotes:
@@ -129,6 +131,7 @@ def quotes():
 @app.route("/quote")
 def quote():
     """return single random quote"""
+    global QUOTES
     if check_if_db_is_available():
         all_quotes = db.get_quotes(DB_CONN)
         if all_quotes:
@@ -144,15 +147,17 @@ def hostname():
     """return the hostname of the given container"""
     return jsonify({"backend": socket.gethostname()})
 
+
 @app.route("/version")
 def version():
     """return the version of the given container"""
     return jsonify({"version": os.environ.get("APP_VERSION", "unknown")})
+
 
 @app.route("/database/version")
 def db_version():
     """return the version of the database"""
     if check_if_db_is_available():
         app.logger.info("Getting database version ...")
-        return jsonify({"version":db.get_version(DB_CONN)})
+        return jsonify({"version": db.get_version(DB_CONN)})
     return jsonify({"version": "unknown"})

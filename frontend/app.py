@@ -30,16 +30,19 @@ APP.register_blueprint(healthz, url_prefix="/healthz")
 
 
 # Read environment variables
-BACKEND_HOST = os.environ.get("BACKEND_SVC_HOST", False)
-BACKEND_PORT = os.environ.get("BACKEND_SVC_PORT", False)
+BACKEND_HOST = os.environ.get("BACKEND_HOST", False)
+BACKEND_PORT = os.environ.get("BACKEND_PORT", False)
 # host for the backend, if not set default to False
 BACKEND_ENDPOINT = bool(BACKEND_HOST and BACKEND_PORT)
 # build the url for the backend
 BACKEND_URL = f"http://{BACKEND_HOST}:{BACKEND_PORT}"
 # whether the container is running in kubernetes, assumes that it is
-ENABLE_KUBERNETS_FEATURES = bool(os.environ.get("not_running_in_kubernetes", True))
+ENABLE_KUBERNETS_FEATURES = bool(os.environ.get("NOT_RUNNING_IN_KUBERNETES", True))
 # namespace pod is running in, must be set in the deployment, or loaded using downward api
-NAMESPACE = os.environ.get("namespace", False)
+NAMESPACE = os.environ.get("NAMESPACE", False)
+# Version of the application
+# TODO add log warning about adding version
+APPLICATION_VERSION = os.environ.get("APP_VERSION", "unknown")
 
 if ENABLE_KUBERNETS_FEATURES:
     log.info("Running in Kubernetes mode.")
@@ -56,6 +59,7 @@ else:
     log.warning(
         "Namespace is not configured, set the environment variable `namespace` to the namespace the pod is deployed in to enable querying pod names."
     )
+
 
 def check_backend_endpoint_env_var() -> bool:
     """Checks if the user has set the backend host environment variable"""
@@ -283,10 +287,13 @@ def get_pod_names() -> Response:
     pod_names = {"frontend_pods": frontend_pods, "backend_pods": backend_pods, "postgres_pods": postgres_pods}
 
     return jsonify(pod_names)
+
+
 @APP.route("/version")
 def version():
     """return the version of the frontend"""
-    return jsonify({"version": os.environ.get("APP_VERSION", "unknown")})
+    return jsonify({"version": APPLICATION_VERSION})
+
 
 @APP.route("/backend/version")
 def backend_version():
@@ -296,6 +303,8 @@ def backend_version():
         return response.text
     app.logger.error("did not get a response 200 from backend")
     return jsonify({"version": "error getting version"})
+
+
 @APP.route("/database/version")
 def database_version():
     """return the version of the backend"""

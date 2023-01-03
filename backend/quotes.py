@@ -7,6 +7,7 @@ default_quotes = [
     '"If builders built buildings the way programmers wrote programs, then the first woodpecker that came along would destroy civilization." - Gerald Weinberg',
     '"There are two ways to write error-free programs; only the third one works." - Alan J. Perlis',
     '"It’s not a bug – it’s an undocumented feature." - Anonymous',
+    '(These quotes came from the backend)',
 ]
 
 db_quotes = [
@@ -15,4 +16,5 @@ db_quotes = [
     '"Copy-and-Paste was programmed by programmers for programmers actually." - /r/ProgrammerHumor',
     '"A good programmer is someone who always looks both ways before crossing a one-way street." - Doug Linder',
     '"Measuring programming progress by lines of code is like measuring aircraft building progress by weight." - Bill Gates',
+    '(These quotes came from the database)',
 ]
