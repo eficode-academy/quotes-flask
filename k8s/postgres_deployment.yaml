@@ -1,7 +1,8 @@
+---
 apiVersion: apps/v1
 kind: Deployment
 metadata:
-  creationTimestamp: null
+  creationTimestamp:
   labels:
     app: postgres
   name: postgres
@@ -13,14 +14,14 @@ spec:
   strategy: {}
   template:
     metadata:
-      creationTimestamp: null
+      creationTimestamp:
       labels:
         app: postgres
     spec:
       volumes:
-        - name: postgres-pvc # name we can reference below in container
+        - name: postgres-pvc  # name we can reference below in container
           persistentVolumeClaim:
-            claimName: postgres-pvc # name of the actual pvc
+            claimName: postgres-pvc  # name of the actual pvc
       containers:
         - image: postgres:14.3
           name: postgres
