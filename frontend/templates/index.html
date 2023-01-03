@@ -136,7 +136,13 @@
                   <tr id="database">
                     <td>Database</td>
                     <td>
-                      <span class="badge bg-secondary">not implemented</span>
+                      {% if database %}
+                      <span class="badge bg-success" id="db_hostname"
+                        >{{ db_hostname }}</span
+                      >
+                      {% else %}
+                      <span class="badge bg-secondary">no pod</span>
+                      {% endif %}
                     </td>
                     <td>
                       {% if database %}

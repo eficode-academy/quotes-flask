@@ -145,7 +145,9 @@ def quote():
 @app.route("/hostname")
 def hostname():
     """return the hostname of the given container"""
-    return jsonify({"backend": socket.gethostname()})
+    backend_hostname = socket.gethostname()
+    db_hostname = db.get_db_hostname(DB_CONN)
+    return jsonify({"backend": backend_hostname, "postgres": db_hostname})
 
 
 @app.route("/version")

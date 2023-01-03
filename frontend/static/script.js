@@ -37,7 +37,7 @@ function make_call(endpoint, method) {
   xhr.send();
 }
 
-function getHostnames() {
+function getHostNames() {
   var endpoint = "/hostname";
   var xhttp = new XMLHttpRequest();
   xhttp.onload = function () {
@@ -45,9 +45,11 @@ function getHostnames() {
       var data = JSON.parse(this.responseText);
       document.getElementById("backend_hostname").innerHTML = data.backend;
       document.getElementById("frontend_hostname").innerHTML = data.frontend;
+      document.getElementById("db_hostname").innerHTML = data.postgres;
     } else {
       document.getElementById("backend_hostname").innerHTML = "Error response";
       document.getElementById("frontend_hostname").innerHTML = "Error response";
+      document.getElementById("db_hostname").innerHTML = "Error response";
     }
   };
   xhttp.open("GET", endpoint, true);
@@ -55,6 +57,7 @@ function getHostnames() {
   xhttp.ontimeout = function (e) {
     document.getElementById("backend_hostname").innerHTML = "Timeout";
     document.getElementById("frontend_hostname").innerHTML = "Timeout";
+    document.getElementById("db_hostname").innerHTML = "Timeout";
   };
   xhttp.send();
 }
@@ -102,23 +105,9 @@ function getAllQuotes() {
   xhttp.send();
 }
 
-function getHostnames() {
-  endpoint = "/hostname";
-  xhttp = new XMLHttpRequest();
-  xhttp.onload = function () {
-    if (this.status == 200) {
-      data = JSON.parse(this.responseText);
-      document.getElementById("backend_hostname").innerHTML = data.backend;
-      document.getElementById("frontend_hostname").innerHTML = data.frontend;
-    }
-  };
-  xhttp.open("GET", endpoint, true);
-  xhttp.send();
-}
-
 // update the hostnames every second
 updatePodHostnames = setInterval(function () {
-  getHostnames();
+  getHostNames();
 }, 1000);
 
 function updatePodNameRow(name, rowId, podNames) {

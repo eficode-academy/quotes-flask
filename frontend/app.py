@@ -143,7 +143,7 @@ def index():
     else:
         _quotes = default_quotes
 
-    frontend_hostname, backend_hostname = get_hostnames()
+    frontend_hostname, backend_hostname, db_hostname = get_hostnames()
     # render the html template with arguments
     return render_template(
         "index.html",
@@ -152,6 +152,7 @@ def index():
         quotes=_quotes,
         frontend_hostname=frontend_hostname,
         backend_hostname=backend_hostname,
+        db_hostname=db_hostname,
     )
 
 
@@ -199,7 +200,7 @@ def add_quote():
     return "Could not parse quote", 500
 
 
-def get_hostnames() -> tuple[str, str]:
+def get_hostnames() -> tuple[str, str, str]:
     """returns tuple of (frontend_hostname, backend_hostname)"""
     log.info("Attempting to get backend hostname ...")
     frontend_hostname = socket.gethostname()
@@ -209,22 +210,28 @@ def get_hostnames() -> tuple[str, str]:
             if response.status_code == 200:
                 resp_json = response.json()
                 log.debug(resp_json)
+                # if both backend and database are connected
+                if "backend" in resp_json and "postgres" in resp_json:
+                    backend_hostname = resp_json["backend"]
+                    db_hostname = resp_json["postgres"]
+                    return (frontend_hostname, backend_hostname, db_hostname)
+                # if only backend is connected
                 if "backend" in resp_json:
                     backend_hostname = resp_json["backend"]
-                    return (frontend_hostname, backend_hostname)
+                    return (frontend_hostname, backend_hostname, None)
         except (requests.ConnectionError, KeyError) as err:
             log.error("Encountered an error trying to get hostname from backend: ")
             log.error(err)
             return (frontend_hostname, None)
     log.error("did not get a response 200 from backend")
-    return (frontend_hostname, None)
+    return (frontend_hostname, None, None)
 
 
 @APP.route("/hostname")
 def hostname():
     """return the hostname of the given container"""
-    frontend_hostname, backend_hostname = get_hostnames()
-    hostnames = {"frontend": frontend_hostname, "backend": backend_hostname}
+    frontend_hostname, backend_hostname, db_hostname = get_hostnames()
+    hostnames = {"frontend": frontend_hostname, "backend": backend_hostname, "postgres": db_hostname}
     return jsonify(hostnames)
 
 
