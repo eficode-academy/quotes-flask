@@ -6,64 +6,49 @@ services:
     build:
       context: frontend
       dockerfile: Dockerfile
-    ports:
-      - 5000:5000
-    volumes:
-      - ./frontend:/app
+    ports: [5000:5000]
+    volumes: [./frontend:/app]
+    restart: always
+    entrypoint: [flask, run, -h, 0.0.0.0]  # overwrite entrypoint with development flask webserver
     environment:
       FLASK_ENV: development
-      not_running_in_kubernetes: "true" # disable k8s specific functionality
+      NOT_RUNNING_IN_KUBERNETES: 'true'  # disable k8s specific functionality
       BACKEND_HOST: backend
       BACKEND_PORT: 5000
-    restart: always
-    entrypoint: # overwrite entrypoint with development flask webserver
-      - flask
-      - run
-      - -h
-      - 0.0.0.0
 
   backend:
     container_name: backend
     build:
       context: backend
       dockerfile: Dockerfile
-    ports:
-      - 8888:5000
-    volumes:
-      - ./backend:/app
+    ports: [8888:5000]
+    volumes: [./backend:/app]
+    restart: always
+    entrypoint: [flask, run, -h, 0.0.0.0]  # overwrite entrypoint with development flask webserver
     environment:
       FLASK_ENV: development
-      db_host: postgres
-      db_port: 5432
-      db_user: superuser
-      db_password: complicated
-      db_name: quotes
-    restart: always
-    entrypoint: # overwrite entrypoint with development flask webserver
-      - flask
-      - run
-      - -h
-      - 0.0.0.0
+      DB_HOST: postgres
+      DB_PORT: 5432
+      DB_USER: superuser
+      DB_PASSWORD: complicated
+      DB_NAME: quotes
 
   postgres:
     container_name: postgres
     image: postgres:14.3
-    ports:
-      - 5432:5432
+    ports: [5432:5432]
+    volumes: [postgres:/var/lib/postgresql/data]
+    restart: always
     environment:
       POSTGRES_USER: superuser
       POSTGRES_PASSWORD: complicated
       POSTGRES_DB: quotes
-    volumes:
-      - postgres:/var/lib/postgresql/data
-    restart: always
 
   # handy GUI for checking that things changed in the db
   adminer:
     image: adminer
     restart: always
-    ports:
-      - 8080:8080
+    ports: [8080:8080]
 
 volumes:
   postgres:

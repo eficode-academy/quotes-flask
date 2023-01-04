@@ -82,6 +82,7 @@ def create_table(db_conn: dict) -> bool:
         app.logger.error(f"when creating table: {err}")
         return False
 
+
 def get_version(db_conn: dict) -> str:
     """check the version of the database"""
     app.logger.info("Checking the version of the database ...")
@@ -101,6 +102,7 @@ def get_version(db_conn: dict) -> str:
     except psycopg2.DatabaseError as err:
         app.logger.error(f"when checking database version: {err}")
         return None
+
 
 def check_connection(db_conn: dict) -> bool:
     """check if the db is connected"""
@@ -178,3 +180,30 @@ def insert_default_quotes(db_conn: dict):
     app.logger.info("Inserting default quotes into database ...")
     for quote in db_quotes:
         insert_quote(quote, db_conn)
+
+
+def get_db_hostname(db_conn: dict) -> str:
+    """get the hostname of the postgres database"""
+    # HACK: this could probably be done more elegantly ...
+    # read the file /etc/hostname to get hostname of postgres server
+    select_sql = "select pg_read_file('/etc/hostname') as hostname;"
+    try:
+        with psycopg2.connect(
+            host=db_conn["host"],
+            port=db_conn["port"],
+            user=db_conn["user"],
+            password=db_conn["password"],
+            database=db_conn["name"],
+        ) as connection:
+            with connection.cursor() as cursor:
+                cursor.execute(select_sql)
+                # returns a tuple, with only one item
+                res = cursor.fetchone()[0]
+                if res:
+                    # strip whitespace from string and return
+                    return res.strip()
+                return None
+    except psycopg2.DatabaseError as err:
+        app.logger.error(f"when getting hostname of db server")
+        app.logger.error(err)
+        return None

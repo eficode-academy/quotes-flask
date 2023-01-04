@@ -1,7 +1,8 @@
+---
 apiVersion: apps/v1
 kind: Deployment
 metadata:
-  creationTimestamp: null
+  creationTimestamp:
   labels:
     app: frontend
   name: frontend
@@ -13,7 +14,7 @@ spec:
   strategy: {}
   template:
     metadata:
-      creationTimestamp: null
+      creationTimestamp:
       labels:
         app: frontend
     spec:
@@ -26,30 +27,30 @@ spec:
           imagePullPolicy: Always
           ### using hardcoded env vars
           # env:
-          # - name: BACKEND_SVC_HOST
+          # - name: BACKEND_HOST
           # value: backend
-          # - name: BACKEND_SVC_PORT
+          # - name: BACKEND_PORT
           # value: "5000"
           ### using configmap reference
           env:
             # hardcode the namespace
-            - name: namespace
-              value: default # e.g. student<num> or `default` for kind/minikube
+            - name: NAMESPACE
+              value: default  # e.g. student<num> or `default` for kind/minikube
             # load namespace from downward api
             # https://github.com/kubernetes/kubernetes/blob/release-1.0/docs/user-guide/downward-api.md
-            # - name: namespace
+            # - name: NAMESPACE
             # valueFrom:
             # fieldRef:
             # fieldPath: metadata.namespace
-            - name: BACKEND_SVC_HOST
+            - name: BACKEND_HOST
               valueFrom:
                 configMapKeyRef:
                   name: backend-config
-                  key: BACKEND_SVC_HOST
-            - name: BACKEND_SVC_PORT
+                  key: BACKEND_HOST
+            - name: BACKEND_PORT
               valueFrom:
                 configMapKeyRef:
                   name: backend-config
-                  key: BACKEND_SVC_PORT
+                  key: BACKEND_PORT
 
 status: {}

@@ -7,4 +7,5 @@ default_quotes = [
     '"First, solve the problem. Then, write the code." – John Johnson',
     '"Java is to JavaScript what car is to Carpet." – Chris Heilmann',
     '"Sometimes it pays to stay in bed on Monday, rather than spending the rest of the week debugging Monday’s code." – Dan Salomon',
+    '(These quotes came from the frontend)',
 ]

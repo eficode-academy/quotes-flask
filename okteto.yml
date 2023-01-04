@@ -1,42 +1,34 @@
+---
 name: quotes-flask
 
 deploy:
   compose:
     file: docker-compose.yaml
-    services:
-      - postgres
-      - frontend
-      - backend
+    services: [postgres, frontend, backend]
 dev:
   frontend:
     command: flask run -h 0.0.0.0 --reload
     workdir: /app
-    sync:
-      - frontend:/app
-    forward:
-      - 5000:5000
-    reverse:
-      - 9000:9000
+    sync: [frontend:/app]
+    forward: [5000:5000]
+    reverse: [9000:9000]
     environment:
       FLASK_ENV: development
-      enable_kubernetes_features: true
-      namespace: default
-      backend_host: backend
-      backend_port: 5000
+      ENABLE_KUBERNETES_FEATURES: true
+      NAMESPACE: default
+      BACKEND_HOST: backend
+      BACKEND_PORT: 5000
 
   backend:
     command: flask run -h 0.0.0.0 --reload
     workdir: /app
-    sync:
-      - backend:/app
-    forward:
-      - 8080:5000
-    reverse:
-      - 9090:9000
+    sync: [backend:/app]
+    forward: [8080:5000]
+    reverse: [9090:9000]
     environment:
       FLASK_ENV: development
-      db_host: postgres
-      db_port: 5432
-      db_user: superuser
-      db_password: complicated
-      db_name: quotes
+      DB_HOST: postgres
+      DB_PORT: 5432
+      DB_USER: superuser
+      DB_PASSWORD: complicated
+      DB_NAME: quotes
