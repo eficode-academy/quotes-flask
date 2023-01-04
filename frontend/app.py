@@ -41,7 +41,7 @@ ENABLE_KUBERNETS_FEATURES = bool(os.environ.get("NOT_RUNNING_IN_KUBERNETES", Tru
 # namespace pod is running in, must be set in the deployment, or loaded using downward api
 NAMESPACE = os.environ.get("NAMESPACE", False)
 # Version of the application
-# TODO add log warning about adding version
+# TODO: add log warning about adding version
 APPLICATION_VERSION = os.environ.get("APP_VERSION", "unknown")
 
 if ENABLE_KUBERNETS_FEATURES:
@@ -91,7 +91,7 @@ def check_if_database_is_available() -> bool:
             else:
                 return False
             return False
-        except (requests.ConnectionError, KeyError):
+        except (requests.ConnectionError, requests.ReadTimeout, KeyError):
             return False
     else:
         return False
@@ -190,7 +190,7 @@ def add_quote():
                     return "Quote received", 200
                 log.error("could not successfully post new quote to backend.")
                 return "error inserting quote", 500
-            except (requests.ConnectionError, KeyError) as err:
+            except (requests.ConnectionError, requests.ReadTimeout, KeyError) as err:
                 log.error("encountered error when trying to pass quote to backend:")
                 log.error(err)
                 return "error inserting quote", 500
@@ -219,7 +219,7 @@ def get_hostnames() -> tuple[str, str, str]:
                 if "backend" in resp_json:
                     backend_hostname = resp_json["backend"]
                     return (frontend_hostname, backend_hostname, None)
-        except (requests.ConnectionError, KeyError) as err:
+        except (requests.ConnectionError, requests.ReadTimeout, KeyError) as err:
             log.error("Encountered an error trying to get hostname from backend: ")
             log.error(err)
             return (frontend_hostname, None)
@@ -248,7 +248,7 @@ def get_pod_names() -> Response:
     if not NAMESPACE:
         return jsonify(
             {
-                "message": "`namespace` environment variable not set, specify to enable querying the Kubernetes API for pod names."
+                "message": "`NAMESPACE` environment variable not set, specify to enable querying the Kubernetes API for pod names."
             }
         )
 
@@ -274,7 +274,7 @@ def get_pod_names() -> Response:
     backend_pods = []
     postgres_pods = []
     # iterate over the returned pods
-    # TODO this coud probably be done more elegantly
+    # TODO: this coud probably be done more elegantly
     for pod in response.items:
         pod_name = pod.metadata.name
         if "frontend" in pod_name:

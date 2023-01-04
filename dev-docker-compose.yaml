@@ -39,6 +39,10 @@ services:
     ports: [5432:5432]
     volumes: [postgres:/var/lib/postgresql/data]
     restart: always
+    environment:
+      POSTGRES_USER: superuser
+      POSTGRES_PASSWORD: complicated
+      POSTGRES_DB: quotes
 
   # handy GUI for checking that things changed in the db
   adminer:

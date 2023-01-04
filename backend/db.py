@@ -184,7 +184,8 @@ def insert_default_quotes(db_conn: dict):
 
 def get_db_hostname(db_conn: dict) -> str:
     """get the hostname of the postgres database"""
-    # read the file /etc/hostname file to get hostname of postgres server
+    # HACK: this could probably be done more elegantly ...
+    # read the file /etc/hostname to get hostname of postgres server
     select_sql = "select pg_read_file('/etc/hostname') as hostname;"
     try:
         with psycopg2.connect(
@@ -196,6 +197,7 @@ def get_db_hostname(db_conn: dict) -> str:
         ) as connection:
             with connection.cursor() as cursor:
                 cursor.execute(select_sql)
+                # returns a tuple, with only one item
                 res = cursor.fetchone()[0]
                 if res:
                     # strip whitespace from string and return

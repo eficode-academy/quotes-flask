@@ -142,8 +142,10 @@ function updatePodNameRowNoPodsFound(name, rowId) {
 function getPodNames() {
   endpoint = "/pod-names";
   xhttp = new XMLHttpRequest();
+  xhttp.timeout = 2000;
   xhttp.onload = function () {
     if (this.status == 200) {
+      console.log("Got reply with pod names");
       data = JSON.parse(this.responseText);
       // if there is a message, there are no pod names
       if ("message" in data) {
@@ -179,6 +181,10 @@ function getPodNames() {
           );
         }
       }
+    } else {
+      console.log("Did not get response from frontend.");
+      document.getElementById("application-status-message").innerHTML =
+        "Lost connection to frontend";
     }
   };
   xhttp.open("GET", endpoint, true);

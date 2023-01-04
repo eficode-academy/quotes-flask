@@ -110,8 +110,8 @@
                         {{ frontend_hostname }}</span
                       >
                     </td>
-                    <td><span class="badge bg-success">connected</span></td>
-                    <td><span class="badge bg-success" id="frontend_version" > waiting for response</span></td>
+                    <td><span class="badge bg-success">Connected</span></td>
+                    <td><span class="badge bg-success" id="frontend_version" >Waiting for response</span></td>
                   </tr>
                   <tr id="backend">
                     <td>Backend</td>
@@ -121,17 +121,17 @@
                         >{{ backend_hostname }}</span
                       >
                       {% else %}
-                      <span class="badge bg-secondary">no pod</span>
+                      <span class="badge bg-secondary">Unknown</span>
                       {% endif %}
                     </td>
                     <td>
                       {% if backend %}
-                      <span class="badge bg-success">connected</span>
+                      <span class="badge bg-success">Connected</span>
                       {% else %}
                       <span class="badge bg-secondary">no connection</span>
                       {% endif %}
                     </td>
-                    <td><span class="badge bg-success" id="backend_version" > waiting for response</span></td>
+                    <td><span class="badge bg-success" id="backend_version" >Waiting for response</span></td>
                   </tr>
                   <tr id="database">
                     <td>Database</td>
@@ -141,17 +141,17 @@
                         >{{ db_hostname }}</span
                       >
                       {% else %}
-                      <span class="badge bg-secondary">no pod</span>
+                      <span class="badge bg-secondary">Unknown</span>
                       {% endif %}
                     </td>
                     <td>
                       {% if database %}
-                      <span class="badge bg-success">connected</span>
+                      <span class="badge bg-success">Connected</span>
                       {% else %}
                       <span class="badge bg-secondary">no connection</span>
                       {% endif %}
                     </td>
-                    <td><span class="badge bg-success" id="database_version" > waiting for response</span></td>
+                    <td><span class="badge bg-success" id="database_version" >Waiting for response</span></td>
                   </tr>
                 </tbody>
               </table>
