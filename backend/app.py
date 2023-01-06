@@ -53,19 +53,19 @@ def check_db_creds_are_set() -> bool:
     """Checks if the user has set all env vars needed for connecting to the db, and warns them otherwise"""
     all_set = True
     if not DATABASE_HOST:
-        log.warning("'db_host' environment variable not set, set this to connect to the database.")
+        log.warning("'DB_HOST' environment variable not set, set this to connect to the database.")
         all_set = False
 
     if not DATABASE_USER:
-        log.warning("'db_user' environment variable not set, set this to connect to the database.")
+        log.warning("'DB_USER' environment variable not set, set this to connect to the database.")
         all_set = False
 
     if not DATABASE_PASSWORD:
-        log.warning("'db_password' environment variable not set, set this to connect to the database.")
+        log.warning("'DB_PASSWORD' environment variable not set, set this to connect to the database.")
         all_set = False
 
     if not DATABASE_NAME:
-        log.warning("'db_name' environment variable not set, set this to connect to the database.")
+        log.warning("'DB_NAMES' environment variable not set, set this to connect to the database.")
         all_set = False
 
     return all_set
