@@ -1,8 +1,11 @@
+"""
+all the functions for interacting with the database.
+"""
 import psycopg2
 from flask import Flask
 from quotes import db_quotes
 
-app = None
+APP = None
 
 # name of the table to create
 TABLE_NAME = "quotes"
@@ -10,13 +13,13 @@ TABLE_NAME = "quotes"
 
 def import_app(_app: Flask) -> None:
     """import app object from main file"""
-    global app
-    app = _app
+    global APP # pylint: disable=global-statement
+    APP = _app
 
 
 def check_if_table_exists(db_conn: dict) -> bool:
     """check if the table already exists"""
-    app.logger.info("Checking if the table exists in the database ...")
+    APP.logger.info("Checking if the table exists in the database ...")
     check_table_exists_sql = f"""
     SELECT EXISTS (
         SELECT FROM pg_tables
@@ -36,16 +39,16 @@ def check_if_table_exists(db_conn: dict) -> bool:
             database=db_conn["name"],
         ) as connection:
             with connection.cursor() as cursor:
-                app.logger.info("Checking if table exists ...")
+                APP.logger.info("Checking if table exists ...")
                 cursor.execute(check_table_exists_sql)
                 res = cursor.fetchone()
             connection.commit()
         exists = res[0]
     except psycopg2.DatabaseError as err:
-        app.logger.error(f"check if table exists: {err}")
+        APP.logger.error(f"check if table exists: {err}")
         return False
 
-    app.logger.info(f"Table exists: {exists}")
+    APP.logger.info(f"Table exists: {exists}")
 
     # if it exists return ture, otherwise create the table
     # and return true if table creation succeeds
@@ -65,7 +68,7 @@ def create_table(db_conn: dict) -> bool:
     );
     """
     try:
-        app.logger.info("Creating table ...")
+        APP.logger.info("Creating table ...")
         with psycopg2.connect(
             host=db_conn["host"],
             port=db_conn["port"],
@@ -79,13 +82,13 @@ def create_table(db_conn: dict) -> bool:
             insert_default_quotes(db_conn)
             return True
     except psycopg2.DatabaseError as err:
-        app.logger.error(f"when creating table: {err}")
+        APP.logger.error(f"when creating table: {err}")
         return False
 
 
 def get_version(db_conn: dict) -> str:
     """check the version of the database"""
-    app.logger.info("Checking the version of the database ...")
+    APP.logger.info("Checking the version of the database ...")
     try:
         with psycopg2.connect(
             host=db_conn["host"],
@@ -97,16 +100,16 @@ def get_version(db_conn: dict) -> str:
             with connection.cursor() as cursor:
                 cursor.execute("SHOW server_version;")
                 res = cursor.fetchone()
-                app.logger.info(f"Database version: {res[0]}")
+                APP.logger.info(f"Database version: {res[0]}")
                 return res[0]
     except psycopg2.DatabaseError as err:
-        app.logger.error(f"when checking database version: {err}")
+        APP.logger.error(f"when checking database version: {err}")
         return None
 
 
 def check_connection(db_conn: dict) -> bool:
     """check if the db is connected"""
-    app.logger.info("Attempting to connect to the database ...")
+    APP.logger.info("Attempting to connect to the database ...")
     try:
         # try to creat a connection to the database
         with psycopg2.connect(
@@ -117,10 +120,10 @@ def check_connection(db_conn: dict) -> bool:
             database=db_conn["name"],
         ):
             # do nothing, we only want to check if we can connect
-            app.logger.info("Successfully connected to the database.")
+            APP.logger.info("Successfully connected to the database.")
         return True
     except psycopg2.OperationalError as err:
-        app.logger.error(f"Could not connect to to database, reason: {err}")
+        APP.logger.error(f"Could not connect to to database, reason: {err}")
         return False
 
 
@@ -140,10 +143,10 @@ def insert_quote(quote: str, db_conn: dict) -> bool:
                     cursor.execute(insert_sql, (quote,))
                 connection.commit()
                 return True
-        app.logger.error("table does not exist.")
+        APP.logger.error("table does not exist.")
         return False
     except psycopg2.OperationalError as err:
-        app.logger.error(f"Could not connect to to database, reason: {err}")
+        APP.logger.error(f"Could not connect to to database, reason: {err}")
         return False
 
 
@@ -168,16 +171,16 @@ def get_quotes(db_conn: dict) -> list:
                             quotes.append(row[0])
                         return quotes
                     return []
-        app.logger.error("table does not exist.")
+        APP.logger.error("table does not exist.")
         return []
     except psycopg2.DatabaseError as err:
-        app.logger.error(f"when getting quotes from the db: {err}")
+        APP.logger.error(f"when getting quotes from the db: {err}")
         return None
 
 
 def insert_default_quotes(db_conn: dict):
     """insert the default quotes into the database"""
-    app.logger.info("Inserting default quotes into database ...")
+    APP.logger.info("Inserting default quotes into database ...")
     for quote in db_quotes:
         insert_quote(quote, db_conn)
 
@@ -204,6 +207,6 @@ def get_db_hostname(db_conn: dict) -> str:
                     return res.strip()
                 return None
     except psycopg2.DatabaseError as err:
-        app.logger.error(f"when getting hostname of db server")
-        app.logger.error(err)
+        APP.logger.error("when getting hostname of db server")
+        APP.logger.error(err)
         return None

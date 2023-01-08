@@ -51,9 +51,7 @@ else:
 
 if NAMESPACE:
     log.info(
-        "Found `namespace` environment variable with value `{namespace}`, will use it to query pod names in the current namespace.".format(
-            namespace=NAMESPACE
-        )
+        "Found `namespace` environment variable with value `%s`, will use it to query pod names in the current namespace.", NAMESPACE
     )
 else:
     log.warning(
@@ -65,9 +63,7 @@ def check_backend_endpoint_env_var() -> bool:
     """Checks if the user has set the backend host environment variable"""
     if BACKEND_ENDPOINT:
         log.info(
-            "Found 'backend_host' environment variable, will attempt to connect to the backend on: `{URL}`".format(
-                URL=BACKEND_URL
-            )
+            "Found 'backend_host' environment variable, will attempt to connect to the backend on: `%s`", BACKEND_URL
         )
         return True
     log.warning("'backend_host' environment variable not set, set this to connect to the backend.")
@@ -179,7 +175,7 @@ def add_quote():
     log.info("attempting to add new quote to backend ...")
     if request.method == "POST":
         request_json = request.get_json()
-        log.info(f"recieved JSON: {request_json}")
+        log.info("recieved JSON: %s", request_json)
 
         if "quote" in request_json:
             url = f"{BACKEND_URL}/add-quote"
@@ -260,12 +256,13 @@ def get_pod_names() -> Response:
     response = None
     try:
         response = k8s_client.list_namespaced_pod(namespace=NAMESPACE)
-    except (kubernetes.client.exceptions.ApiException):
+    except kubernetes.client.exceptions.ApiException:
         log.error("Caugth an API error when trying to query the Kubernetes API to get pod info.")
         log.error("You are most likely missing a service account with read access for pods in this namespace.")
         return jsonify(
             {
-                "message": "Got an API error when trying to get pod names from the k8s API, you are likely missing a ServiceAccount with proper permissions, see the readme for quotes-flask."
+                "message": "Got an API error when trying to get pod names from the k8s API, "\
+                    "you are likely missing a ServiceAccount with proper permissions, see the readme for quotes-flask."
             }
         )
 
@@ -305,19 +302,19 @@ def version():
 @APP.route("/backend/version")
 def backend_version():
     """return the version of the backend"""
-    response = requests.get(f"{BACKEND_URL}/version")
+    response = requests.get(f"{BACKEND_URL}/version", timeout=1)
     if response.status_code == 200:
         return response.text
-    app.logger.error("did not get a response 200 from backend")
+    log.error("did not get a response 200 from backend")
     return jsonify({"version": "error getting version"})
 
 
 @APP.route("/database/version")
 def database_version():
     """return the version of the backend"""
-    response = requests.get(f"{BACKEND_URL}/database/version")
+    response = requests.get(f"{BACKEND_URL}/database/version", timeout=1)
     if response.status_code == 200:
         return response.text
-    app.logger.error("did not get a response 200 from backend" + response.text)
+    log.error("did not get a response 200 from backend %s", response.text)
 
     return jsonify({"version": "error getting version"})
