@@ -91,7 +91,6 @@ def check_db_connection():
 @APP.route("/add-quote", methods=["POST"])
 def add_quote():
     """add quote to list of quotes"""
-    global QUOTES
     if request.method == "POST":
         request_json = request.get_json()
 
@@ -102,9 +101,9 @@ def add_quote():
             if check_if_db_is_available():
                 inserted = db.insert_quote(quote_to_insert, DB_CONN)
                 if inserted:
-                    log.info(f"Successfully inserted '{quote}' into db.")
+                    log.info("Successfully inserted '%s' into db.", quote_to_insert)
                 else:
-                    log.error(f"could insert '{quote}' into db.")
+                    log.error("could insert '%s' into db.", quote_to_insert)
         else:
             log.error("could not find 'quote' in request")
             return "No 'quote' key in JSON", 500
@@ -115,13 +114,13 @@ def add_quote():
 
 @APP.route("/")
 def index():
+    """default route"""
     return "Hello from the backend!"
 
 
 @APP.route("/quotes")
 def quotes():
     """return all quotes as JSON"""
-    global QUOTES
     if check_if_db_is_available():
         all_quotes = db.get_quotes(DB_CONN)
         if all_quotes:
@@ -133,7 +132,6 @@ def quotes():
 @APP.route("/quote")
 def quote():
     """return single random quote"""
-    global QUOTES
     if check_if_db_is_available():
         all_quotes = db.get_quotes(DB_CONN)
         if all_quotes:
