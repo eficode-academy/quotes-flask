@@ -1,8 +1,7 @@
----
 apiVersion: apps/v1
 kind: Deployment
 metadata:
-  creationTimestamp:
+  creationTimestamp: null
   labels:
     app: frontend
   name: frontend
@@ -14,43 +13,32 @@ spec:
   strategy: {}
   template:
     metadata:
-      creationTimestamp:
+      creationTimestamp: null
       labels:
         app: frontend
     spec:
       containers:
         - image: ghcr.io/eficode-academy/quotes-flask-frontend:release
-          name: frontend
+          name: quotes-flask-frontend
           ports:
             - containerPort: 5000
           resources: {}
-          imagePullPolicy: Always
-          ### using hardcoded env vars
-          # env:
-          # - name: BACKEND_HOST
-          # value: backend
-          # - name: BACKEND_PORT
-          # value: "5000"
-          ### using configmap reference
           env:
-            # hardcode the namespace
-            - name: NAMESPACE
-              value: default  # e.g. student<num> or `default` for kind/minikube
             # load namespace from downward api
             # https://github.com/kubernetes/kubernetes/blob/release-1.0/docs/user-guide/downward-api.md
-            # - name: NAMESPACE
-            # valueFrom:
-            # fieldRef:
-            # fieldPath: metadata.namespace
+            - name: namespace
+              valueFrom:
+                fieldRef:
+                  fieldPath: metadata.namespace
             - name: BACKEND_HOST
               valueFrom:
                 configMapKeyRef:
                   name: backend-config
-                  key: BACKEND_HOST
+                  key: backend_host
             - name: BACKEND_PORT
               valueFrom:
                 configMapKeyRef:
                   name: backend-config
-                  key: BACKEND_PORT
+                  key: backend_port
 
 status: {}

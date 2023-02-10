@@ -1,8 +1,7 @@
----
 apiVersion: apps/v1
 kind: Deployment
 metadata:
-  creationTimestamp:
+  creationTimestamp: null
   labels:
     app: postgres
   name: postgres
@@ -14,29 +13,20 @@ spec:
   strategy: {}
   template:
     metadata:
-      creationTimestamp:
+      creationTimestamp: null
       labels:
         app: postgres
     spec:
       volumes:
-        - name: postgres-pvc  # name we can reference below in container
+        - name: postgres-pvc # name we can reference below in container
           persistentVolumeClaim:
-            claimName: postgres-pvc  # name of the actual pvc
+            claimName: postgres-pvc # name of the actual pvc
       containers:
         - image: postgres:14.3
           name: postgres
           ports:
             - containerPort: 5432
           resources: {}
-          ### Using hardcoded env vars
-          # env:
-          # - name: POSTGRES_USER
-          # value: superuser
-          # - name: POSTGRES_PASSWORD
-          # value: complicated
-          # - name: POSTGRES_DB
-          # value: quotes
-          ### using configMapKeyRef
           env:
             - name: POSTGRES_USER
               valueFrom:
@@ -57,6 +47,4 @@ spec:
             - name: postgres-pvc
               mountPath: /var/lib/postgresql/data
               subPath: postgres
-              # for AWS EBS we need to create a sub directory,
-              # see: https://stackoverflow.com/a/51174380
 status: {}

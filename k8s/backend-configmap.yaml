@@ -5,5 +5,5 @@ metadata:
   name: backend-config
 data:
   # all data points are handled as strings
-  BACKEND_HOST: backend
-  BACKEND_PORT: '5000'
+  backend_host: "backend"
+  backend_port: "5000"
