@@ -51,7 +51,8 @@ else:
 
 if NAMESPACE:
     log.info(
-        "Found `namespace` environment variable with value `%s`, will use it to query pod names in the current namespace.", NAMESPACE
+        "Found `namespace` environment variable with value `%s`, will use it to query pod names in the current namespace.",
+        NAMESPACE,
     )
 else:
     log.warning(
@@ -261,8 +262,8 @@ def get_pod_names() -> Response:
         log.error("You are most likely missing a service account with read access for pods in this namespace.")
         return jsonify(
             {
-                "message": "Got an API error when trying to get pod names from the k8s API, "\
-                    "you are likely missing a ServiceAccount with proper permissions, see the readme for quotes-flask."
+                "message": "Got an API error when trying to get pod names from the k8s API, "
+                "you are likely missing a ServiceAccount with proper permissions, see the readme for quotes-flask."
             }
         )
 
@@ -318,3 +319,10 @@ def database_version():
     log.error("did not get a response 200 from backend %s", response.text)
 
     return jsonify({"version": "error getting version"})
+
+
+@APP.route("/ip")
+def return_ip():
+    """return the ip address of the host"""
+    ip = socket.gethostbyname(socket.gethostname())
+    return ip
