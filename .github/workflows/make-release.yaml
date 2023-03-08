@@ -2,82 +2,48 @@ name: Package and upload a release
 
 on:
   push:
-    branches: [main]
-
 jobs:
-  # This step builds our artifacts, uploads them to the workflow run, and
-  # outputs their digest.
   build:
+    name: "Build dists"
+    runs-on: "ubuntu-latest"
+    environment:
+      name: "publish"
+    defaults:
+      run:
+        working-directory: "backend"
     outputs:
       hashes: ${{ steps.hash.outputs.hashes }}
-    runs-on: ubuntu-latest
     steps:
-      - name: Checkout
-        uses: actions/checkout@v3
-      
-      - name: package artifacts
-        run: |
-          # These are some amazing artifacts.
-          zip -r frontend.zip frontend/
-          zip -r backend.zip backend/
+      - name: "Checkout repository"
+        uses: "actions/checkout@2541b1294d2704b0964813337f33b291d3f8596b" # tag=v3
 
-      - name: Generate hashes
-        shell: bash
+      - name: "Setup Python"
+        uses: "actions/setup-python@13ae5bb136fac2878aff31522b9efb785519f984" # tag=v4
+        with:
+          python-version: "3.x"
+
+      - name: "Install dependencies"
+        run: python -m pip install build
+
+      - name: Build using Python
+        id: build
+        run: |
+          python -m build
+
+      - name: Generate subject
         id: hash
         run: |
-          # sha256sum generates sha256 hash for all artifacts.
-          # base64 -w0 encodes to base64 and outputs on a single line.
-          # sha256sum frontend.zip backend.zip ... | base64 -w0
-          echo "hashes=$(sha256sum frontend.zip backend.zip | base64 -w0)" >> "$GITHUB_OUTPUT"
+          cd dist
+          HASHES=$(sha256sum * | base64 -w0)
+          echo "hashes=$HASHES" >> "$GITHUB_OUTPUT"
 
-      - name: Upload Frontend
-        uses: actions/upload-artifact@3cea5372237819ed00197afe530f5a7ea3e805c8 # tag=v3.1.0
-        with:
-          name: frontend
-          path: frontend.zip
-          if-no-files-found: error
-          retention-days: 5
-
-      - name: Upload backend
-        uses: actions/upload-artifact@3cea5372237819ed00197afe530f5a7ea3e805c8 # tag=v3.1.0
-        with:
-          name: backend
-          path: backend.zip
-          if-no-files-found: error
-          retention-days: 5
-
-  # This step calls the generic workflow to generate provenance.
   provenance:
     needs: [build]
     permissions:
-      actions: read
-      id-token: write
-      contents: write
+      actions: read # To read the workflow path.
+      id-token: write # To sign the provenance.
+      contents: write # To add assets to a release.
     uses: slsa-framework/slsa-github-generator/.github/workflows/generator_generic_slsa3.yml@v1.5.0
     with:
       base64-subjects: "${{ needs.build.outputs.hashes }}"
-      # Upload provenance to a new release
-      upload-assets: true
-
-  # This step uploads our artifacts to the tagged GitHub release.
-  release:
-    needs: [build, provenance]
-    runs-on: ubuntu-latest
-    if: startsWith(github.ref, 'refs/tags/')
-    steps:
-      - name: Download frontend
-        uses: actions/download-artifact@fb598a63ae348fa914e94cd0ff38f362e927b741 # tag=v2.1.0
-        with:
-          name: frontend
-
-      - name: Download backend
-        uses: actions/download-artifact@fb598a63ae348fa914e94cd0ff38f362e927b741 # tag=v2.1.0
-        with:
-          name: backend
-
-      - name: Upload assets
-        uses: softprops/action-gh-release@1e07f4398721186383de40550babbdf2b84acfc5 # v0.1.14
-        with:
-          files: |
-            frontend.zip
-            backend.zip
+      upload-assets: true # Optional: Upload to a new release
