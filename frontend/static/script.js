@@ -53,7 +53,7 @@ function getHostNames() {
     }
   };
   xhttp.open("GET", endpoint, true);
-  xhttp.timeout = 200;
+  xhttp.timeout = 2000;
   xhttp.ontimeout = function (e) {
     document.getElementById("backend_hostname").innerHTML = "Timeout";
     document.getElementById("frontend_hostname").innerHTML = "Timeout";
