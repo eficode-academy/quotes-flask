@@ -32,7 +32,7 @@ function getFrontendVersion() {
 function make_call(endpoint, method) {
   var xhr = new XMLHttpRequest();
   xhr.open("GET", endpoint, true);
-  xhr.timeout = 200;
+  xhr.timeout = 2000;
   xhr.onload = method;
   xhr.send();
 }
