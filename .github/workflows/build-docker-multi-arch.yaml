@@ -1,0 +1,43 @@
+---
+name: docker-multi-arch-build
+
+on:
+  push:
+    branches:
+      - "main"
+
+jobs:
+  docker-build-push:
+    runs-on: ubuntu-latest
+    permissions:
+      contents: read
+      packages: write
+    steps:
+      - name: Set up QEMU
+        uses: docker/setup-qemu-action@v2
+
+      - name: Set up Docker Buildx
+        uses: docker/setup-buildx-action@v2
+
+      - name: Log in to the Container registry
+        uses: docker/login-action@v2
+        with:
+          registry: ghcr.io
+          username: zanderhavgaard
+          password: ${{ secrets.GITHUB_TOKEN }}
+
+      - name: Frontend Build and push
+        uses: docker/build-push-action@v4
+        with:
+          push: true
+          platforms: linux/amd64,linux/arm64, linux/arm/v7
+          tags: ghcr.io/eficode-academy/quotes-flask-frontend:release
+          context: frontend
+
+      - name: Frontend Build and push
+        uses: docker/build-push-action@v4
+        with:
+          push: true
+          platforms: linux/amd64,linux/arm64
+          tags: ghcr.io/eficode-academy/quotes-flask-backend:release
+          context: backend
