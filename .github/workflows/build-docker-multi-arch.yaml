@@ -32,7 +32,7 @@ jobs:
           push: true
           platforms: linux/amd64,linux/arm64, linux/arm/v7
           tags: ghcr.io/eficode-academy/quotes-flask-frontend:release
-          context: frontend
+          context: "{{defaultContext}}:frontend"
 
       - name: Frontend Build and push
         uses: docker/build-push-action@v4
@@ -40,4 +40,4 @@ jobs:
           push: true
           platforms: linux/amd64,linux/arm64
           tags: ghcr.io/eficode-academy/quotes-flask-backend:release
-          context: backend
+          context: "{{defaultContext}}:backend"
