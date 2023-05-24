@@ -7,7 +7,7 @@ services:
     ports: [5000:5000]
     restart: always
     environment:
-      ENABLE_KUBERNETES_FEATURES: 'false'  # disable k8s specific functionality
+      ENABLE_KUBERNETES_FEATURES: "false" # disable k8s specific functionality
       BACKEND_HOST: backend
       BACKEND_PORT: 5000
 
