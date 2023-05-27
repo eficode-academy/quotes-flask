@@ -37,13 +37,8 @@ DATABASE_USER = os.environ.get("DB_USER", False)
 DATABASE_PASSWORD = os.environ.get("DB_PASSWORD", False)
 DATABASE_NAME = os.environ.get("DB_NAME", False)
 
-DB_CONN = {
-    "host": DATABASE_HOST,
-    "port": DATABASE_PORT,
-    "user": DATABASE_USER,
-    "password": DATABASE_PASSWORD,
-    "name": DATABASE_NAME,
-}
+# Create libpq connection string
+DB_CONN = f"host={DATABASE_HOST} port={DATABASE_PORT} dbname={DATABASE_NAME} user={DATABASE_USER} password={DATABASE_PASSWORD}"
 
 # the list of quotes
 QUOTES = default_quotes

@@ -17,7 +17,7 @@ def import_app(_app: Flask) -> None:
     APP = _app
 
 
-def check_if_table_exists(db_conn: dict) -> bool:
+def check_if_table_exists(db_conn: str) -> bool:
     """check if the table already exists"""
     APP.logger.info("Checking if the table exists in the database ...")
     check_table_exists_sql = f"""
@@ -31,13 +31,7 @@ def check_if_table_exists(db_conn: dict) -> bool:
     res = None
 
     try:
-        with psycopg2.connect(
-            host=db_conn["host"],
-            port=db_conn["port"],
-            user=db_conn["user"],
-            password=db_conn["password"],
-            database=db_conn["name"],
-        ) as connection:
+        with psycopg2.connect(db_conn) as connection:
             with connection.cursor() as cursor:
                 APP.logger.info("Checking if table exists ...")
                 cursor.execute(check_table_exists_sql)
@@ -58,7 +52,7 @@ def check_if_table_exists(db_conn: dict) -> bool:
     return created
 
 
-def create_table(db_conn: dict) -> bool:
+def create_table(db_conn: str) -> bool:
     """create the table for storing quotes"""
 
     create_table_sql = f"""
@@ -69,13 +63,7 @@ def create_table(db_conn: dict) -> bool:
     """
     try:
         APP.logger.info("Creating table ...")
-        with psycopg2.connect(
-            host=db_conn["host"],
-            port=db_conn["port"],
-            user=db_conn["user"],
-            password=db_conn["password"],
-            database=db_conn["name"],
-        ) as connection:
+        with psycopg2.connect(db_conn) as connection:
             with connection.cursor() as cursor:
                 cursor.execute(create_table_sql)
             connection.commit()
@@ -86,17 +74,11 @@ def create_table(db_conn: dict) -> bool:
         return False
 
 
-def get_version(db_conn: dict) -> str:
+def get_version(db_conn: str) -> str:
     """check the version of the database"""
     APP.logger.info("Checking the version of the database ...")
     try:
-        with psycopg2.connect(
-            host=db_conn["host"],
-            port=db_conn["port"],
-            user=db_conn["user"],
-            password=db_conn["password"],
-            database=db_conn["name"],
-        ) as connection:
+        with psycopg2.connect(db_conn) as connection:
             with connection.cursor() as cursor:
                 cursor.execute("SHOW server_version;")
                 res = cursor.fetchone()
@@ -107,18 +89,12 @@ def get_version(db_conn: dict) -> str:
         return None
 
 
-def check_connection(db_conn: dict) -> bool:
+def check_connection(db_conn: str) -> bool:
     """check if the db is connected"""
     APP.logger.info("Attempting to connect to the database ...")
     try:
         # try to creat a connection to the database
-        with psycopg2.connect(
-            host=db_conn["host"],
-            port=db_conn["port"],
-            user=db_conn["user"],
-            password=db_conn["password"],
-            database=db_conn["name"],
-        ):
+        with psycopg2.connect(db_conn):
             # do nothing, we only want to check if we can connect
             APP.logger.info("Successfully connected to the database.")
         return True
@@ -127,18 +103,12 @@ def check_connection(db_conn: dict) -> bool:
         return False
 
 
-def insert_quote(quote: str, db_conn: dict) -> bool:
+def insert_quote(quote: str, db_conn: str) -> bool:
     """insert a new quote into the database"""
     insert_sql = f"INSERT INTO {TABLE_NAME} (quote) VALUES (%s);"
     try:
         if check_if_table_exists(db_conn):
-            with psycopg2.connect(
-                host=db_conn["host"],
-                port=db_conn["port"],
-                user=db_conn["user"],
-                password=db_conn["password"],
-                database=db_conn["name"],
-            ) as connection:
+            with psycopg2.connect(db_conn) as connection:
                 with connection.cursor() as cursor:
                     cursor.execute(insert_sql, (quote,))
                 connection.commit()
@@ -150,18 +120,12 @@ def insert_quote(quote: str, db_conn: dict) -> bool:
         return False
 
 
-def get_quotes(db_conn: dict) -> list:
+def get_quotes(db_conn: str) -> list:
     """get list of all quotes from the database"""
     select_sql = f"SELECT quote FROM {TABLE_NAME}"
     try:
         if check_if_table_exists(db_conn):
-            with psycopg2.connect(
-                host=db_conn["host"],
-                port=db_conn["port"],
-                user=db_conn["user"],
-                password=db_conn["password"],
-                database=db_conn["name"],
-            ) as connection:
+            with psycopg2.connect(db_conn) as connection:
                 with connection.cursor() as cursor:
                     cursor.execute(select_sql)
                     res = list(cursor.fetchall())
@@ -178,26 +142,20 @@ def get_quotes(db_conn: dict) -> list:
         return None
 
 
-def insert_default_quotes(db_conn: dict):
+def insert_default_quotes(db_conn: str):
     """insert the default quotes into the database"""
     APP.logger.info("Inserting default quotes into database ...")
     for quote in db_quotes:
         insert_quote(quote, db_conn)
 
 
-def get_db_hostname(db_conn: dict) -> str:
+def get_db_hostname(db_conn: str) -> str:
     """get the hostname of the postgres database"""
     # HACK: this could probably be done more elegantly ...
     # read the file /etc/hostname to get hostname of postgres server
     select_sql = "select pg_read_file('/etc/hostname') as hostname;"
     try:
-        with psycopg2.connect(
-            host=db_conn["host"],
-            port=db_conn["port"],
-            user=db_conn["user"],
-            password=db_conn["password"],
-            database=db_conn["name"],
-        ) as connection:
+        with psycopg2.connect(db_conn) as connection:
             with connection.cursor() as cursor:
                 cursor.execute(select_sql)
                 # returns a tuple, with only one item
