@@ -1,0 +1,18 @@
+name: build and push helm
+on:
+  push:
+    branches:
+      - main
+      - wip/sal/helm
+jobs:
+    helm-build:
+        runs-on: ubuntu-latest
+        steps:
+            - name: checkout
+              uses: actions/checkout@v3
+            - name: helm build
+              uses: azure/setup-helm@v1
+              with:
+                  version: v3.5.4
+            - name: helm login
+              run: helm registry login -u ${{ github.actor }} -p ${{ github.token}} ghcr.io
