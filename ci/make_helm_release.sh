@@ -4,6 +4,7 @@ REGISTRY="ghcr.io/eficode-academy"
 FRONTEND_REPOSITORY="quotes-flask-frontend"
 BACKEND_REPOSITORY="quotes-flask-backend"
 HELM_REPOSITORY="quotes-flask-helm"
+QUOTES="quotes-flask"
 VERSIONS="
 1.0.0
 2.0.0
@@ -25,5 +26,8 @@ for VERSION in $VERSIONS; do
     FRONTEND_IMAGE=$FRONTEND_IMAGE yq -i '.spec.template.spec.containers[0].image = env(FRONTEND_IMAGE)' quotes-flask/templates/frontend-deployment.yaml
     BACKEND_IMAGE=$BACKEND_IMAGE yq -i '.spec.template.spec.containers[0].image = env(BACKEND_IMAGE)' quotes-flask/templates/backend-deployment.yaml
     echo "helm push quotes-flask $VERSION"
+    helm package quotes-flask
+    echo "$PWD"
+    helm push $QUOTES-$VERSION.tgz oci://ghcr.io/eficode-academy
 
 done
