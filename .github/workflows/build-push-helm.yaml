@@ -4,6 +4,9 @@ on:
     branches:
       - main
       - wip/sal/helm
+permissions:
+  contents: read
+  packages: write
 jobs:
     helm-build:
         runs-on: ubuntu-latest
