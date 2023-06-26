@@ -18,16 +18,13 @@ cd helm
 
 for VERSION in $VERSIONS; do
     echo "Creating Helm release: $VERSION"
-    FRONTEND_IMAGE="$REGISTRY/$FRONTEND_REPOSITORY:$VERSION"
-    BACKEND_IMAGE="$REGISTRY/$BACKEND_REPOSITORY:$VERSION"
     echo "generating helm release for $VERSION"
 	VERSION=$VERSION yq -i '.version = env(VERSION)' quotes-flask/Chart.yaml
     VERSION=$VERSION yq -i '.appVersion = env(VERSION)' quotes-flask/Chart.yaml
-    FRONTEND_IMAGE=$FRONTEND_IMAGE yq -i '.spec.template.spec.containers[0].image = env(FRONTEND_IMAGE)' quotes-flask/templates/frontend-deployment.yaml
-    BACKEND_IMAGE=$BACKEND_IMAGE yq -i '.spec.template.spec.containers[0].image = env(BACKEND_IMAGE)' quotes-flask/templates/backend-deployment.yaml
+    VERSION=$VERSION yq -i '.backend.tag = env(VERSION)' quotes-flask/values.yaml
+    VERSION=$VERSION yq -i '.frontend.tag = env(VERSION)' quotes-flask/values.yaml
     echo "helm push quotes-flask $VERSION"
     helm package quotes-flask
-    echo "$PWD"
     helm push $QUOTES-$VERSION.tgz oci://ghcr.io/eficode-academy
 
 done
