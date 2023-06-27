@@ -1,8 +1,8 @@
 backend:
   replicas: 1
-  tag: 5.0.0
+  tag: release
 frontend:
   replicas: 1
   service:
     type: NodePort
-  tag: 5.0.0
+  tag: release
