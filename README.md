@@ -60,6 +60,24 @@ For kind this will unintuitively be the `INTERNAL-IP`, for a cloud cluster use t
 
 E.g. in a browser go to: `172.19.0.2:<nodePort>`
 
+### Kubernetes using Helm
+
+Helm chart is supplied in the `helm/quotes-flask` directory.
+
+Deploying the application using `helm`:
+
+```sh
+helm install quotes-flask helm/quotes-flask
+```
+
+See the release with `helm list`, and get the NodePort with `kubectl get service frontend`.
+
+You can change the values of the helm chart by supplying a `values.yaml` file, or by using the `--set` flag.
+
+```sh
+helm install quotes-flask helm/quotes-flask --set frontend.tag="3.0.0"
+```
+
 ## Developing
 
 ### docker-compose
